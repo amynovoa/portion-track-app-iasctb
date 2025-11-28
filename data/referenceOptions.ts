@@ -116,9 +116,9 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Pistachios', diet: 'vegan' },
       { name: 'Chia seeds', diet: 'vegan' },
       { name: 'Flax seeds', diet: 'vegan' },
+      { name: 'Nut butters (Peanut, Almond)', diet: 'vegan' },
     ],
     portionSizes: [
-      '1/4 cup nuts',
       '2 tbsp seeds',
       '2 tbsp nut butter',
       '1 oz nuts (small handful)',
