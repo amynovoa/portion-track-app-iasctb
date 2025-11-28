@@ -34,8 +34,8 @@ export default function TabLayout() {
     {
       name: 'metrics',
       route: '/(tabs)/metrics',
-      icon: 'monitor_weight',
-      iosIcon: 'scalemass.fill',
+      icon: 'fitness-center',
+      iosIcon: 'figure.arms.open',
       label: 'Weight',
     },
     {
