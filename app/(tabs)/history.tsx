@@ -114,10 +114,10 @@ export default function HistoryScreen() {
                   </Text>
                 </View>
                 <IconSymbol
-                  ios_icon_name="chevron.right"
-                  android_material_icon_name="chevron_right"
-                  size={24}
-                  color={colors.textSecondary}
+                  ios_icon_name="list.bullet.circle.fill"
+                  android_material_icon_name="format_list_bulleted"
+                  size={28}
+                  color={colors.primary}
                 />
               </TouchableOpacity>
             ))
