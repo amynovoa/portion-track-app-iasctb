@@ -25,7 +25,7 @@ export default function TabLayout() {
     {
       name: 'progress',
       route: '/(tabs)/progress',
-      icon: 'trending_up',
+      icon: 'show-chart',
       label: 'Progress',
     },
     {
