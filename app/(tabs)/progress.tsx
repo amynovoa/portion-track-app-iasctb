@@ -54,7 +54,6 @@ export default function ProgressScreen() {
     if (targetsData && logsData.length > 0) {
       calculateStats(logsData, targetsData);
     } else {
-      // Reset stats when no data
       setStats({
         streak: 0,
         totalDays: 0,
@@ -74,7 +73,6 @@ export default function ProgressScreen() {
   };
 
   const calculateStats = (logs: DailyLog[], targets: DailyTargets) => {
-    // Calculate adherence for each food group
     const proteinHits = logs.filter((log) => log.protein >= targets.protein).length;
     const veggiesHits = logs.filter((log) => log.veggies >= targets.veggies).length;
     const fruitHits = logs.filter((log) => log.fruit >= targets.fruit).length;
@@ -99,7 +97,6 @@ export default function ProgressScreen() {
       dairy: totalLogs > 0 ? Math.round((dairyHits / totalLogs) * 100) : 0,
     });
 
-    // Calculate streak
     const sortedLogs = [...logs].sort((a, b) => b.date.localeCompare(a.date));
     let streak = 0;
     for (const log of sortedLogs) {
@@ -141,7 +138,6 @@ export default function ProgressScreen() {
             resizeMode="contain"
           />
         </View>
-        <Text style={styles.headerTitle}>Progress</Text>
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -158,30 +154,32 @@ export default function ProgressScreen() {
           </View>
         ) : (
           <>
-            <View style={styles.statCard}>
-              <View style={styles.statIcon}>
-                <IconSymbol
-                  ios_icon_name="flame.fill"
-                  android_material_icon_name="local_fire_department"
-                  size={32}
-                  color={colors.primary}
-                />
+            <View style={styles.statsRow}>
+              <View style={styles.statCard}>
+                <View style={styles.statIcon}>
+                  <IconSymbol
+                    ios_icon_name="flame.fill"
+                    android_material_icon_name="local_fire_department"
+                    size={32}
+                    color={colors.primary}
+                  />
+                </View>
+                <Text style={styles.statLabel}>Current Streak</Text>
+                <Text style={styles.statValue}>{stats.streak} days</Text>
               </View>
-              <Text style={styles.statLabel}>Current Streak</Text>
-              <Text style={styles.statValue}>{stats.streak || 0} days</Text>
-            </View>
 
-            <View style={styles.statCard}>
-              <View style={styles.statIcon}>
-                <IconSymbol
-                  ios_icon_name="calendar"
-                  android_material_icon_name="calendar_today"
-                  size={32}
-                  color={colors.primary}
-                />
+              <View style={styles.statCard}>
+                <View style={styles.statIcon}>
+                  <IconSymbol
+                    ios_icon_name="calendar"
+                    android_material_icon_name="calendar_today"
+                    size={32}
+                    color={colors.primary}
+                  />
+                </View>
+                <Text style={styles.statLabel}>Total Days Tracked</Text>
+                <Text style={styles.statValue}>{stats.totalDays}</Text>
               </View>
-              <Text style={styles.statLabel}>Total Days Tracked</Text>
-              <Text style={styles.statValue}>{stats.totalDays || 0}</Text>
             </View>
 
             <Text style={styles.sectionTitle}>Target Adherence</Text>
@@ -216,18 +214,12 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   logoContainer: {
-    marginBottom: 12,
     height: 60,
     width: '100%',
   },
   logo: {
     width: '100%',
     height: '100%',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
   },
   scrollView: {
     flex: 1,
@@ -252,24 +244,30 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 8,
   },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 16,
+  },
   statCard: {
+    flex: 1,
     backgroundColor: colors.card,
     borderRadius: 20,
     padding: 24,
     alignItems: 'center',
-    marginBottom: 16,
   },
   statIcon: {
     marginBottom: 12,
   },
   statLabel: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
     color: colors.textSecondary,
     marginBottom: 8,
+    textAlign: 'center',
   },
   statValue: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '700',
     color: colors.text,
   },
