@@ -13,7 +13,7 @@ export default function MetricsScreen() {
   const [metrics, setMetrics] = useState<MetricWeight[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newWeight, setNewWeight] = useState('');
-  const [chartDays, setChartDays] = useState<7 | 30>(7);
+  const [chartDays, setChartDays] = useState<7 | 30 | 60 | 90 | 'all'>(7);
 
   useFocusEffect(
     useCallback(() => {
@@ -82,19 +82,34 @@ export default function MetricsScreen() {
         </View>
         <View style={styles.headerRow}>
           <Text style={styles.headerTitle}>Weight Metrics</Text>
-          <TouchableOpacity onPress={() => setShowAddForm(!showAddForm)}>
+          <TouchableOpacity 
+            style={styles.addButton}
+            onPress={() => setShowAddForm(!showAddForm)}
+          >
             <IconSymbol
-              ios_icon_name={showAddForm ? 'xmark.circle.fill' : 'plus.circle.fill'}
-              android_material_icon_name={showAddForm ? 'cancel' : 'add_circle'}
-              size={32}
-              color={colors.primary}
+              ios_icon_name="scalemass.fill"
+              android_material_icon_name="monitor_weight"
+              size={24}
+              color={colors.background}
             />
+            <Text style={styles.addButtonText}>
+              {showAddForm ? 'Cancel' : 'Enter Weight'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {showAddForm && (
         <View style={styles.addForm}>
+          <View style={styles.addFormHeader}>
+            <IconSymbol
+              ios_icon_name="scalemass"
+              android_material_icon_name="monitor_weight"
+              size={32}
+              color={colors.primary}
+            />
+            <Text style={styles.addFormTitle}>Log Your Weight</Text>
+          </View>
           <TextInput
             style={styles.input}
             placeholder="Enter weight (lbs)"
@@ -104,7 +119,7 @@ export default function MetricsScreen() {
             onChangeText={setNewWeight}
           />
           <TouchableOpacity style={buttonStyles.primary} onPress={handleAddWeight}>
-            <Text style={buttonStyles.text}>Add Weight</Text>
+            <Text style={buttonStyles.text}>Save Weight</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -118,7 +133,7 @@ export default function MetricsScreen() {
                 onPress={() => setChartDays(7)}
               >
                 <Text style={[styles.toggleText, chartDays === 7 && styles.toggleTextActive]}>
-                  7 Days
+                  7d
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -126,7 +141,31 @@ export default function MetricsScreen() {
                 onPress={() => setChartDays(30)}
               >
                 <Text style={[styles.toggleText, chartDays === 30 && styles.toggleTextActive]}>
-                  30 Days
+                  30d
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.toggleButton, chartDays === 60 && styles.toggleButtonActive]}
+                onPress={() => setChartDays(60)}
+              >
+                <Text style={[styles.toggleText, chartDays === 60 && styles.toggleTextActive]}>
+                  60d
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.toggleButton, chartDays === 90 && styles.toggleButtonActive]}
+                onPress={() => setChartDays(90)}
+              >
+                <Text style={[styles.toggleText, chartDays === 90 && styles.toggleTextActive]}>
+                  90d
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.toggleButton, chartDays === 'all' && styles.toggleButtonActive]}
+                onPress={() => setChartDays('all')}
+              >
+                <Text style={[styles.toggleText, chartDays === 'all' && styles.toggleTextActive]}>
+                  All
                 </Text>
               </TouchableOpacity>
             </View>
@@ -146,7 +185,7 @@ export default function MetricsScreen() {
               color={colors.textSecondary}
             />
             <Text style={styles.emptyText}>No weight entries yet</Text>
-            <Text style={styles.emptySubtext}>Add your first weight entry above</Text>
+            <Text style={styles.emptySubtext}>Tap &quot;Enter Weight&quot; above to get started</Text>
           </View>
         ) : (
           metrics.map((metric, index) => (
@@ -204,12 +243,37 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text,
   },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    gap: 6,
+  },
+  addButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.background,
+  },
   addForm: {
     padding: 24,
     backgroundColor: colors.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
     gap: 12,
+  },
+  addFormHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 8,
+  },
+  addFormTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
   },
   input: {
     backgroundColor: colors.background,
@@ -238,7 +302,7 @@ const styles = StyleSheet.create({
   toggleButton: {
     flex: 1,
     paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     borderRadius: 8,
     alignItems: 'center',
   },
@@ -246,7 +310,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   toggleText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: colors.textSecondary,
   },

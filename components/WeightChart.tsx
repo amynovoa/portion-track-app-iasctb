@@ -7,7 +7,7 @@ import { MetricWeight } from '@/types';
 
 interface WeightChartProps {
   data: MetricWeight[];
-  days?: 7 | 30;
+  days?: 7 | 30 | 60 | 90 | 'all';
 }
 
 export default function WeightChart({ data, days = 7 }: WeightChartProps) {
@@ -25,12 +25,17 @@ export default function WeightChart({ data, days = 7 }: WeightChartProps) {
     );
   }
 
-  // Sort data by date and take last N days
-  const sortedData = [...data]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(-days);
+  // Sort data by date and take last N days (or all if 'all')
+  const sortedData = [...data].sort((a, b) => a.date.localeCompare(b.date));
+  
+  let filteredData: MetricWeight[];
+  if (days === 'all') {
+    filteredData = sortedData;
+  } else {
+    filteredData = sortedData.slice(-days);
+  }
 
-  if (sortedData.length === 0) {
+  if (filteredData.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No data to display</Text>
@@ -39,7 +44,7 @@ export default function WeightChart({ data, days = 7 }: WeightChartProps) {
   }
 
   // Calculate min and max values with padding
-  const weights = sortedData.map((d) => d.value);
+  const weights = filteredData.map((d) => d.value);
   const minWeight = Math.min(...weights);
   const maxWeight = Math.max(...weights);
   const weightRange = maxWeight - minWeight || 10;
@@ -52,7 +57,7 @@ export default function WeightChart({ data, days = 7 }: WeightChartProps) {
 
   // Scale functions
   const xScale = (index: number) => {
-    return padding.left + (index / Math.max(sortedData.length - 1, 1)) * plotWidth;
+    return padding.left + (index / Math.max(filteredData.length - 1, 1)) * plotWidth;
   };
 
   const yScale = (value: number) => {
@@ -60,16 +65,16 @@ export default function WeightChart({ data, days = 7 }: WeightChartProps) {
   };
 
   // Generate points for the line
-  const points = sortedData
+  const points = filteredData
     .map((d, i) => `${xScale(i)},${yScale(d.value)}`)
     .join(' ');
 
   // Calculate trendline using linear regression
-  const n = sortedData.length;
-  const sumX = sortedData.reduce((sum, _, i) => sum + i, 0);
-  const sumY = sortedData.reduce((sum, d) => sum + d.value, 0);
-  const sumXY = sortedData.reduce((sum, d, i) => sum + i * d.value, 0);
-  const sumX2 = sortedData.reduce((sum, _, i) => sum + i * i, 0);
+  const n = filteredData.length;
+  const sumX = filteredData.reduce((sum, _, i) => sum + i, 0);
+  const sumY = filteredData.reduce((sum, d) => sum + d.value, 0);
+  const sumXY = filteredData.reduce((sum, d, i) => sum + i * d.value, 0);
+  const sumX2 = filteredData.reduce((sum, _, i) => sum + i * i, 0);
 
   const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
   const intercept = (sumY - slope * sumX) / n;
@@ -90,11 +95,19 @@ export default function WeightChart({ data, days = 7 }: WeightChartProps) {
     { value: yMin, label: yMin.toFixed(0) },
   ];
 
+  // Determine subtitle text
+  const getSubtitle = () => {
+    if (days === 'all') {
+      return `All time (${filteredData.length} entries)`;
+    }
+    return `Last ${days} days`;
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.chartHeader}>
         <Text style={styles.chartTitle}>Weight Trend</Text>
-        <Text style={styles.chartSubtitle}>Last {days} days</Text>
+        <Text style={styles.chartSubtitle}>{getSubtitle()}</Text>
       </View>
 
       <Svg width={chartWidth} height={chartHeight}>
@@ -145,7 +158,7 @@ export default function WeightChart({ data, days = 7 }: WeightChartProps) {
         />
 
         {/* Data points */}
-        {sortedData.map((d, i) => (
+        {filteredData.map((d, i) => (
           <Circle
             key={i}
             cx={xScale(i)}
@@ -158,7 +171,7 @@ export default function WeightChart({ data, days = 7 }: WeightChartProps) {
         ))}
 
         {/* X-axis labels (show first, middle, and last) */}
-        {sortedData.length > 0 && (
+        {filteredData.length > 0 && (
           <>
             <SvgText
               x={xScale(0)}
@@ -167,28 +180,28 @@ export default function WeightChart({ data, days = 7 }: WeightChartProps) {
               fill={colors.textSecondary}
               textAnchor="start"
             >
-              {formatShortDate(sortedData[0].date)}
+              {formatShortDate(filteredData[0].date)}
             </SvgText>
-            {sortedData.length > 2 && (
+            {filteredData.length > 2 && (
               <SvgText
-                x={xScale(Math.floor(sortedData.length / 2))}
+                x={xScale(Math.floor(filteredData.length / 2))}
                 y={chartHeight - 10}
                 fontSize="11"
                 fill={colors.textSecondary}
                 textAnchor="middle"
               >
-                {formatShortDate(sortedData[Math.floor(sortedData.length / 2)].date)}
+                {formatShortDate(filteredData[Math.floor(filteredData.length / 2)].date)}
               </SvgText>
             )}
-            {sortedData.length > 1 && (
+            {filteredData.length > 1 && (
               <SvgText
-                x={xScale(sortedData.length - 1)}
+                x={xScale(filteredData.length - 1)}
                 y={chartHeight - 10}
                 fontSize="11"
                 fill={colors.textSecondary}
                 textAnchor="end"
               >
-                {formatShortDate(sortedData[sortedData.length - 1].date)}
+                {formatShortDate(filteredData[filteredData.length - 1].date)}
               </SvgText>
             )}
           </>
