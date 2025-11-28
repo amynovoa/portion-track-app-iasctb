@@ -4,6 +4,10 @@ import { Stack } from 'expo-router';
 import FloatingTabBar, { TabBarItem } from '@/components/FloatingTabBar';
 import { colors } from '@/styles/commonStyles';
 
+export const unstable_settings = {
+  initialRouteName: "today",
+};
+
 export default function TabLayout() {
   const tabs: TabBarItem[] = [
     {
@@ -46,11 +50,11 @@ export default function TabLayout() {
           animation: 'none',
         }}
       >
-        <Stack.Screen name="today" />
-        <Stack.Screen name="history" />
-        <Stack.Screen name="progress" />
-        <Stack.Screen name="metrics" />
-        <Stack.Screen name="settings" />
+        <Stack.Screen name="today" options={{ headerShown: false }} />
+        <Stack.Screen name="history" options={{ headerShown: false }} />
+        <Stack.Screen name="progress" options={{ headerShown: false }} />
+        <Stack.Screen name="metrics" options={{ headerShown: false }} />
+        <Stack.Screen name="settings" options={{ headerShown: false }} />
       </Stack>
       <FloatingTabBar tabs={tabs} />
     </>

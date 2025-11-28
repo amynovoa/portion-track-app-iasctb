@@ -2,6 +2,10 @@
 import { Stack } from 'expo-router';
 import React from 'react';
 
+export const unstable_settings = {
+  initialRouteName: "welcome",
+};
+
 export default function OnboardingLayout() {
   return (
     <Stack
@@ -10,10 +14,10 @@ export default function OnboardingLayout() {
         animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen name="welcome" />
-      <Stack.Screen name="goal" />
-      <Stack.Screen name="diet" />
-      <Stack.Screen name="settings" />
+      <Stack.Screen name="welcome" options={{ headerShown: false }} />
+      <Stack.Screen name="goal" options={{ headerShown: false }} />
+      <Stack.Screen name="diet" options={{ headerShown: false }} />
+      <Stack.Screen name="settings" options={{ headerSheen: false }} />
     </Stack>
   );
 }
