@@ -3,15 +3,17 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Switch, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
-import { Goal, DietStyle, User } from '@/types';
+import { Goal, DietStyle, User, MetricWeight } from '@/types';
 import { storage } from '@/utils/storage';
 import { createDailyTargets } from '@/utils/targetUtils';
+import { getTodayDate } from '@/utils/dateUtils';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function SettingsScreen() {
   const params = useLocalSearchParams();
   const goal = params.goal as Goal;
   const dietStyle = (params.dietStyle as DietStyle) || 'omnivore';
+  const initialWeight = params.initialWeight as string;
 
   const [resetTime, setResetTime] = useState('04:00');
   const [remindersOn, setRemindersOn] = useState(false);
@@ -39,6 +41,19 @@ export default function SettingsScreen() {
 
     await storage.setUser(user);
     await storage.setDailyTargets(targets);
+
+    // Save initial weight if provided
+    if (initialWeight) {
+      const weight = parseFloat(initialWeight);
+      if (!isNaN(weight) && weight > 0) {
+        const weightEntry: MetricWeight = {
+          date: getTodayDate(),
+          value: weight,
+        };
+        await storage.setWeightMetrics([weightEntry]);
+      }
+    }
+
     await storage.setOnboardingComplete();
 
     router.replace('/(tabs)/today');

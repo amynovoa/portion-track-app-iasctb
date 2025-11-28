@@ -7,11 +7,13 @@ import { storage } from '@/utils/storage';
 import { MetricWeight } from '@/types';
 import { formatDate, getTodayDate } from '@/utils/dateUtils';
 import { IconSymbol } from '@/components/IconSymbol';
+import WeightChart from '@/components/WeightChart';
 
 export default function MetricsScreen() {
   const [metrics, setMetrics] = useState<MetricWeight[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newWeight, setNewWeight] = useState('');
+  const [chartDays, setChartDays] = useState<7 | 30>(7);
 
   useFocusEffect(
     useCallback(() => {
@@ -108,6 +110,33 @@ export default function MetricsScreen() {
       )}
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        {metrics.length > 0 && (
+          <>
+            <View style={styles.chartToggleContainer}>
+              <TouchableOpacity
+                style={[styles.toggleButton, chartDays === 7 && styles.toggleButtonActive]}
+                onPress={() => setChartDays(7)}
+              >
+                <Text style={[styles.toggleText, chartDays === 7 && styles.toggleTextActive]}>
+                  7 Days
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.toggleButton, chartDays === 30 && styles.toggleButtonActive]}
+                onPress={() => setChartDays(30)}
+              >
+                <Text style={[styles.toggleText, chartDays === 30 && styles.toggleTextActive]}>
+                  30 Days
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <WeightChart data={metrics} days={chartDays} />
+
+            <Text style={styles.sectionTitle}>Weight History</Text>
+          </>
+        )}
+
         {metrics.length === 0 ? (
           <View style={styles.emptyContainer}>
             <IconSymbol
@@ -197,6 +226,39 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 24,
     paddingBottom: 100,
+  },
+  chartToggleContainer: {
+    flexDirection: 'row',
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 12,
+    gap: 4,
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  toggleButtonActive: {
+    backgroundColor: colors.primary,
+  },
+  toggleText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  toggleTextActive: {
+    color: colors.background,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+    marginTop: 24,
+    marginBottom: 12,
   },
   emptyContainer: {
     alignItems: 'center',

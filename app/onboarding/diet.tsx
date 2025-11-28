@@ -34,7 +34,7 @@ export default function DietScreen() {
 
   const handleContinue = () => {
     router.push({
-      pathname: '/onboarding/settings',
+      pathname: '/onboarding/weight',
       params: { goal, dietStyle: selectedDiet },
     });
   };
