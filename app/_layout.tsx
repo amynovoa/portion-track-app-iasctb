@@ -6,7 +6,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { SystemBars } from "react-native-edge-to-edge";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useColorScheme } from "react-native";
+import { useColorScheme, Platform } from "react-native";
 import {
   DarkTheme,
   DefaultTheme,
@@ -14,11 +14,24 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
+import { EditableContext } from "@/babel-plugins/react/withEditableWrapper_";
 
 SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
   initialRouteName: "index",
+};
+
+// Default context value for EditableContext
+const defaultEditableContextValue = {
+  onElementClick: () => {},
+  editModeEnabled: false,
+  attributes: {},
+  selected: undefined,
+  setSelected: () => {},
+  hovered: undefined,
+  pushHovered: () => {},
+  popHovered: () => {},
 };
 
 export default function RootLayout() {
@@ -62,7 +75,7 @@ export default function RootLayout() {
     },
   };
 
-  return (
+  const content = (
     <>
       <StatusBar style="auto" animated />
       <ThemeProvider
@@ -83,4 +96,15 @@ export default function RootLayout() {
       </ThemeProvider>
     </>
   );
+
+  // Only wrap with EditableContext on web platform
+  if (Platform.OS === "web") {
+    return (
+      <EditableContext.Provider value={defaultEditableContextValue}>
+        {content}
+      </EditableContext.Provider>
+    );
+  }
+
+  return content;
 }

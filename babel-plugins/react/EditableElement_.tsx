@@ -35,15 +35,13 @@ const toArray = (object: T | T[]): T[] => {
 };
 
 export default function EditableElement_(_props: PropsWithChildren<any>) {
-  const {
-    editModeEnabled,
-    selected,
-    onElementClick,
-    attributes: overwrittenProps,
-    hovered,
-    pushHovered,
-    popHovered,
-  } = useContext(EditableContext);
+  let context;
+  try {
+    context = useContext(EditableContext);
+  } catch (e) {
+    // Context not available, just render children
+    context = null;
+  }
 
   const { children } = _props;
   const { props } = children;
@@ -53,6 +51,21 @@ export default function EditableElement_(_props: PropsWithChildren<any>) {
   if (Platform.OS !== "web") {
     return cloneElement(children, props);
   }
+
+  // If context is not available or not properly initialized, just return children
+  if (!context || !context.onElementClick) {
+    return cloneElement(children, props);
+  }
+
+  const {
+    editModeEnabled,
+    selected,
+    onElementClick,
+    attributes: overwrittenProps,
+    hovered,
+    pushHovered,
+    popHovered,
+  } = context;
 
   // Safety check: if __trace is not defined, just return the children as-is
   if (!props.__trace) {
@@ -141,4 +154,7 @@ export default function EditableElement_(_props: PropsWithChildren<any>) {
       children: children.props.children,
     });
   }
+
+  // Default: just return children
+  return children;
 }
