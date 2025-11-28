@@ -164,7 +164,7 @@ export default function ProgressScreen() {
                     color={colors.primary}
                   />
                 </View>
-                <Text style={styles.statValue}>{String(stats.streak)}</Text>
+                <Text style={styles.statValue}>{stats.streak || 0}</Text>
                 <Text style={styles.statLabel}>Current Streak</Text>
               </View>
 
@@ -177,7 +177,7 @@ export default function ProgressScreen() {
                     color={colors.primary}
                   />
                 </View>
-                <Text style={styles.statValue}>{String(stats.totalDays)}</Text>
+                <Text style={styles.statValue}>{stats.totalDays || 0}</Text>
                 <Text style={styles.statLabel}>Total Days Tracked</Text>
               </View>
             </View>
