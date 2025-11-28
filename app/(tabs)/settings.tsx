@@ -20,6 +20,7 @@ const foodGroupLabels: { key: FoodGroup; label: string; max?: number }[] = [
   { key: 'legumes', label: 'Legumes' },
   { key: 'water', label: 'Water' },
   { key: 'alcohol', label: 'Alcohol', max: 2 },
+  { key: 'dairy', label: 'Dairy', max: 1 },
 ];
 
 export default function SettingsScreen() {
@@ -85,6 +86,12 @@ export default function SettingsScreen() {
     // Apply max limit for alcohol
     if (group === 'alcohol' && numValue > 2) {
       Alert.alert('Maximum Limit', 'Alcohol target cannot exceed 2 portions per day.');
+      return;
+    }
+    
+    // Apply max limit for dairy
+    if (group === 'dairy' && numValue > 1) {
+      Alert.alert('Maximum Limit', 'Dairy target cannot exceed 1 portion per day.');
       return;
     }
     

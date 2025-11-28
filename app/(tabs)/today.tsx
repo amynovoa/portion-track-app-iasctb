@@ -19,6 +19,7 @@ const foodGroups: { key: FoodGroup; label: string; icon: keyof typeof MaterialCo
   { key: 'legumes', label: 'Legumes', icon: 'seed' },
   { key: 'water', label: 'Water', icon: 'cup-water' },
   { key: 'alcohol', label: 'Alcohol', icon: 'glass-wine' },
+  { key: 'dairy', label: 'Dairy', icon: 'cheese' },
 ];
 
 export default function TodayScreen() {
@@ -51,6 +52,7 @@ export default function TodayScreen() {
         legumes: 0,
         water: 0,
         alcohol: 0,
+        dairy: 0,
       };
       await storage.setDailyLogs([...logs, todayLog]);
     } else if (userData && shouldResetLog(todayLog.date, userData.resetTime)) {
@@ -65,6 +67,7 @@ export default function TodayScreen() {
         legumes: 0,
         water: 0,
         alcohol: 0,
+        dairy: 0,
       };
       const updatedLogs = logs.filter((l) => l.date !== today);
       await storage.setDailyLogs([...updatedLogs, todayLog]);

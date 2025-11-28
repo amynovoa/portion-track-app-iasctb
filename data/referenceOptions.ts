@@ -107,4 +107,21 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Spirits (1.5 oz)', diet: 'vegan' },
     ],
   },
+  dairy: {
+    title: 'Dairy Options',
+    tip: 'Choose dairy or plant-based alternatives for calcium and protein.',
+    options: [
+      { name: 'Greek yogurt', diet: 'vegetarian' },
+      { name: 'Cottage cheese', diet: 'vegetarian' },
+      { name: 'Regular yogurt', diet: 'vegetarian' },
+      { name: 'Milk', diet: 'vegetarian' },
+      { name: 'Cheese', diet: 'vegetarian' },
+      { name: 'Kefir', diet: 'vegetarian' },
+      { name: 'Plant-based yogurt', diet: 'vegan' },
+      { name: 'Almond milk', diet: 'vegan' },
+      { name: 'Soy milk', diet: 'vegan' },
+      { name: 'Oat milk', diet: 'vegan' },
+      { name: 'Plant-based cheese', diet: 'vegan' },
+    ],
+  },
 };

@@ -21,6 +21,7 @@ export interface DailyTargets {
   legumes: number;
   water: number;
   alcohol: number;
+  dairy: number;
 }
 
 export interface DailyLog {
@@ -34,6 +35,7 @@ export interface DailyLog {
   legumes: number;
   water: number;
   alcohol: number;
+  dairy: number;
 }
 
 export interface MetricWeight {
@@ -50,7 +52,8 @@ export type FoodGroup =
   | 'nutsSeeds'
   | 'legumes'
   | 'water'
-  | 'alcohol';
+  | 'alcohol'
+  | 'dairy';
 
 export interface FoodOption {
   name: string;

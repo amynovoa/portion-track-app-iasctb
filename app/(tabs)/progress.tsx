@@ -45,7 +45,7 @@ export default function ProgressScreen() {
     const sortedLogs = [...logs].sort((a, b) => b.date.localeCompare(a.date));
     let streak = 0;
     for (const log of sortedLogs) {
-      const totalPortions = log.protein + log.veggies + log.fruit + log.wholeGrains + log.fats + log.nutsSeeds + log.legumes;
+      const totalPortions = log.protein + log.veggies + log.fruit + log.wholeGrains + log.fats + log.nutsSeeds + log.legumes + log.dairy;
       if (totalPortions > 0) {
         streak++;
       } else {

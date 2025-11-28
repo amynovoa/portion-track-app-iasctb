@@ -41,6 +41,7 @@ export default function HistoryScreen() {
       { key: 'legumes', label: 'Legumes' },
       { key: 'water', label: 'Water' },
       { key: 'alcohol', label: 'Alcohol' },
+      { key: 'dairy', label: 'Dairy' },
     ];
 
     return (
@@ -102,7 +103,7 @@ export default function HistoryScreen() {
                 <View style={styles.logContent}>
                   <Text style={styles.logDate}>{formatDate(log.date)}</Text>
                   <Text style={styles.logSummary}>
-                    {log.protein + log.veggies + log.fruit + log.wholeGrains + log.fats + log.nutsSeeds + log.legumes + log.water} portions logged
+                    {log.protein + log.veggies + log.fruit + log.wholeGrains + log.fats + log.nutsSeeds + log.legumes + log.water + log.dairy} portions logged
                   </Text>
                 </View>
                 <IconSymbol

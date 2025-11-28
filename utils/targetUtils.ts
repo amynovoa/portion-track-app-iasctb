@@ -10,11 +10,12 @@ export function getDefaultTargets(goal: Goal): Omit<DailyTargets, 'date'> {
         veggies: 5,
         fruit: 2,
         wholeGrains: 3,
-        fats: 3,
+        fats: 2,
         nutsSeeds: 1,
         legumes: 1,
         water: 8,
-        alcohol: 1, // Changed from 0 to 1, user can edit up to 2
+        alcohol: 1,
+        dairy: 0,
       };
     case 'maintenance':
       return {
@@ -27,6 +28,7 @@ export function getDefaultTargets(goal: Goal): Omit<DailyTargets, 'date'> {
         legumes: 1,
         water: 8,
         alcohol: 1,
+        dairy: 1,
       };
     case 'heart_health':
       return {
@@ -38,7 +40,8 @@ export function getDefaultTargets(goal: Goal): Omit<DailyTargets, 'date'> {
         nutsSeeds: 1,
         legumes: 2,
         water: 8,
-        alcohol: 1, // Changed from 0 to 1, user can edit up to 2
+        alcohol: 1,
+        dairy: 0,
       };
   }
 }

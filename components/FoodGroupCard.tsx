@@ -27,6 +27,7 @@ const foodGroupIcons: Record<FoodGroup, { ios: string; android: string }> = {
   legumes: { ios: 'circle.hexagongrid.fill', android: 'apps' },
   water: { ios: 'drop.fill', android: 'water_drop' },
   alcohol: { ios: 'wineglass.fill', android: 'local_bar' },
+  dairy: { ios: 'cup.and.saucer.fill', android: 'local_cafe' },
 };
 
 export default function FoodGroupCard({
