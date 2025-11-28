@@ -1,18 +1,32 @@
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Platform, TextInput } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
 import { storage } from '@/utils/storage';
-import { User, Goal, DietStyle } from '@/types';
+import { User, Goal, DietStyle, DailyTargets, FoodGroup } from '@/types';
 import { createDailyTargets } from '@/utils/targetUtils';
 import { IconSymbol } from '@/components/IconSymbol';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+const foodGroupLabels: { key: FoodGroup; label: string; max?: number }[] = [
+  { key: 'protein', label: 'Protein' },
+  { key: 'veggies', label: 'Veggies' },
+  { key: 'fruit', label: 'Fruit' },
+  { key: 'wholeGrains', label: 'Whole Grains' },
+  { key: 'fats', label: 'Healthy Fats' },
+  { key: 'nutsSeeds', label: 'Nuts & Seeds' },
+  { key: 'legumes', label: 'Legumes' },
+  { key: 'water', label: 'Water' },
+  { key: 'alcohol', label: 'Alcohol', max: 2 },
+];
+
 export default function SettingsScreen() {
   const [user, setUser] = useState<User | null>(null);
+  const [targets, setTargets] = useState<DailyTargets | null>(null);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [editingTargets, setEditingTargets] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -22,7 +36,9 @@ export default function SettingsScreen() {
 
   const loadData = async () => {
     const userData = await storage.getUser();
+    const targetsData = await storage.getDailyTargets();
     setUser(userData);
+    setTargets(targetsData);
   };
 
   const updateUser = async (updates: Partial<User>) => {
@@ -32,12 +48,50 @@ export default function SettingsScreen() {
     setUser(updatedUser);
   };
 
+  const updateTargets = async (updates: Partial<DailyTargets>) => {
+    if (!targets) return;
+    const updatedTargets = { ...targets, ...updates };
+    await storage.setDailyTargets(updatedTargets);
+    setTargets(updatedTargets);
+  };
+
   const handleGoalChange = async (goal: Goal) => {
     if (!user) return;
-    await updateUser({ goal });
-    const newTargets = createDailyTargets(goal);
-    await storage.setDailyTargets(newTargets);
-    Alert.alert('Goal Updated', 'Your daily targets have been updated based on your new goal.');
+    
+    Alert.alert(
+      'Change Goal',
+      'Changing your goal will reset your daily targets to the recommended values for this goal. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Continue',
+          onPress: async () => {
+            await updateUser({ goal });
+            const newTargets = createDailyTargets(goal);
+            await storage.setDailyTargets(newTargets);
+            setTargets(newTargets);
+            Alert.alert('Goal Updated', 'Your daily targets have been updated based on your new goal.');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleTargetChange = (group: FoodGroup, value: string) => {
+    if (!targets) return;
+    
+    const numValue = parseInt(value) || 0;
+    
+    // Apply max limit for alcohol
+    if (group === 'alcohol' && numValue > 2) {
+      Alert.alert('Maximum Limit', 'Alcohol target cannot exceed 2 portions per day.');
+      return;
+    }
+    
+    // Ensure non-negative values
+    if (numValue < 0) return;
+    
+    updateTargets({ [group]: numValue });
   };
 
   const handleExportData = async () => {
@@ -91,7 +145,7 @@ export default function SettingsScreen() {
     return date;
   };
 
-  if (!user) {
+  if (!user || !targets) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
         <Text style={styles.text}>Loading...</Text>
@@ -143,6 +197,41 @@ export default function SettingsScreen() {
                 {user.dietStyle === diet && <View style={styles.radioInner} />}
               </View>
             </TouchableOpacity>
+          ))}
+        </View>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Daily Targets</Text>
+          <TouchableOpacity onPress={() => setEditingTargets(!editingTargets)}>
+            <Text style={styles.editButton}>{editingTargets ? 'Done' : 'Edit'}</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.settingCard}>
+          {foodGroupLabels.map((group, index) => (
+            <View key={index} style={styles.targetRow}>
+              <Text style={styles.targetLabel}>{group.label}</Text>
+              {editingTargets ? (
+                <View style={styles.targetInputContainer}>
+                  <TextInput
+                    style={styles.targetInput}
+                    value={targets[group.key].toString()}
+                    onChangeText={(value) => handleTargetChange(group.key, value)}
+                    keyboardType="number-pad"
+                    maxLength={2}
+                  />
+                  {group.max && (
+                    <Text style={styles.targetMaxLabel}>max {group.max}</Text>
+                  )}
+                </View>
+              ) : (
+                <View style={styles.targetValueContainer}>
+                  <Text style={styles.targetValue}>{targets[group.key]}</Text>
+                  {group.max && (
+                    <Text style={styles.targetMaxLabel}>max {group.max}</Text>
+                  )}
+                </View>
+              )}
+            </View>
           ))}
         </View>
 
@@ -247,12 +336,24 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 100,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 12,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: colors.text,
     marginTop: 16,
     marginBottom: 12,
+  },
+  editButton: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.primary,
   },
   settingCard: {
     backgroundColor: colors.card,
@@ -313,6 +414,53 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     backgroundColor: colors.primary,
+  },
+  targetRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  targetLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  targetInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  targetInput: {
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    minWidth: 50,
+    textAlign: 'center',
+  },
+  targetValueContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  targetValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    minWidth: 30,
+    textAlign: 'right',
+  },
+  targetMaxLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
   },
   actionButton: {
     flexDirection: 'row',

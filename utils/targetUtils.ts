@@ -14,7 +14,7 @@ export function getDefaultTargets(goal: Goal): Omit<DailyTargets, 'date'> {
         nutsSeeds: 1,
         legumes: 1,
         water: 8,
-        alcohol: 0,
+        alcohol: 1, // Changed from 0 to 1, user can edit up to 2
       };
     case 'maintenance':
       return {
@@ -38,7 +38,7 @@ export function getDefaultTargets(goal: Goal): Omit<DailyTargets, 'date'> {
         nutsSeeds: 1,
         legumes: 2,
         water: 8,
-        alcohol: 0,
+        alcohol: 1, // Changed from 0 to 1, user can edit up to 2
       };
   }
 }
