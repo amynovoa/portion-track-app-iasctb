@@ -1,16 +1,13 @@
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { colors, commonStyles, buttonStyles } from '@/styles/commonStyles';
 
 export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Image
             source={require('@/assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png')}
@@ -26,7 +23,7 @@ export default function WelcomeScreen() {
         <Text style={styles.description}>
           Build healthy eating habits with simple portion tracking designed for your wellness goals.
         </Text>
-      </ScrollView>
+      </View>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -48,50 +45,48 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 40,
   },
-  scrollContent: {
-    flexGrow: 1,
+  content: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 20,
   },
   logoContainer: {
-    marginBottom: 24,
-    height: 400,
-    width: '100%',
+    marginBottom: 16,
+    height: 180,
+    width: 180,
   },
   logo: {
     width: '100%',
     height: '100%',
   },
   appName: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: '700',
     color: colors.primary,
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '600',
     color: colors.text,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: colors.primary,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
     paddingHorizontal: 10,
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 20,
     paddingHorizontal: 20,
-    marginBottom: 20,
   },
   buttonContainer: {
     width: '100%',

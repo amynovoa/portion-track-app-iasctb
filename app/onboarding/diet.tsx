@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
 import { DietStyle, Goal } from '@/types';
@@ -41,35 +41,35 @@ export default function DietScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <View style={styles.header}>
         <Text style={styles.title}>Choose your diet style</Text>
         <Text style={styles.subtitle}>
-          This helps us show you relevant food options (optional)
+          This helps us show you relevant food options
         </Text>
+      </View>
 
-        <View style={styles.optionsContainer}>
-          {dietStyles.map((diet) => (
-            <TouchableOpacity
-              key={diet.value}
-              style={[styles.optionCard, selectedDiet === diet.value && styles.optionCardSelected]}
-              onPress={() => setSelectedDiet(diet.value)}
-            >
-              <View style={styles.optionIcon}>
-                <IconSymbol
-                  ios_icon_name={diet.icon.ios}
-                  android_material_icon_name={diet.icon.android}
-                  size={32}
-                  color={selectedDiet === diet.value ? colors.primary : colors.textSecondary}
-                />
-              </View>
-              <View style={styles.optionContent}>
-                <Text style={styles.optionLabel}>{diet.label}</Text>
-                <Text style={styles.optionDescription}>{diet.description}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
+      <View style={styles.optionsContainer}>
+        {dietStyles.map((diet) => (
+          <TouchableOpacity
+            key={diet.value}
+            style={[styles.optionCard, selectedDiet === diet.value && styles.optionCardSelected]}
+            onPress={() => setSelectedDiet(diet.value)}
+          >
+            <View style={styles.optionIcon}>
+              <IconSymbol
+                ios_icon_name={diet.icon.ios}
+                android_material_icon_name={diet.icon.android}
+                size={28}
+                color={selectedDiet === diet.value ? colors.primary : colors.textSecondary}
+              />
+            </View>
+            <View style={styles.optionContent}>
+              <Text style={styles.optionLabel}>{diet.label}</Text>
+              <Text style={styles.optionDescription}>{diet.description}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={buttonStyles.primary} onPress={handleContinue}>
@@ -85,32 +85,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     paddingTop: 60,
-  },
-  scrollView: {
-    flex: 1,
     paddingHorizontal: 24,
+    paddingBottom: 40,
+  },
+  header: {
+    marginBottom: 24,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: colors.textSecondary,
-    marginBottom: 32,
-    lineHeight: 24,
+    lineHeight: 22,
   },
   optionsContainer: {
-    gap: 16,
-    marginBottom: 24,
+    flex: 1,
+    gap: 12,
+    justifyContent: 'center',
   },
   optionCard: {
     flexDirection: 'row',
     backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 14,
+    padding: 16,
     borderWidth: 2,
     borderColor: 'transparent',
   },
@@ -119,26 +120,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   optionIcon: {
-    marginRight: 16,
+    marginRight: 14,
   },
   optionContent: {
     flex: 1,
   },
   optionLabel: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   optionDescription: {
-    fontSize: 14,
+    fontSize: 13,
     color: colors.textSecondary,
-    lineHeight: 20,
+    lineHeight: 18,
   },
   buttonContainer: {
-    paddingHorizontal: 24,
-    paddingVertical: 20,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
+    width: '100%',
+    paddingTop: 20,
   },
 });

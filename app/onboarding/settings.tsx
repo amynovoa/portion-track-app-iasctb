@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
 import { Goal, DietStyle, User } from '@/types';
@@ -53,12 +53,14 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <View style={styles.header}>
         <Text style={styles.title}>Daily Reset Time</Text>
         <Text style={styles.subtitle}>
           Choose when your daily tracking should reset
         </Text>
+      </View>
 
+      <View style={styles.content}>
         <View style={styles.settingCard}>
           <View style={styles.settingRow}>
             <View style={styles.settingContent}>
@@ -108,7 +110,7 @@ export default function SettingsScreen() {
             You can change these settings anytime in the Settings tab
           </Text>
         </View>
-      </ScrollView>
+      </View>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={buttonStyles.primary} onPress={handleComplete}>
@@ -124,28 +126,32 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     paddingTop: 60,
-  },
-  scrollView: {
-    flex: 1,
     paddingHorizontal: 24,
+    paddingBottom: 40,
+  },
+  header: {
+    marginBottom: 24,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700',
     color: colors.text,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: colors.textSecondary,
-    marginBottom: 32,
-    lineHeight: 24,
+    lineHeight: 22,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
   },
   settingCard: {
     backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 12,
   },
   settingRow: {
     flexDirection: 'row',
@@ -154,47 +160,44 @@ const styles = StyleSheet.create({
   },
   settingContent: {
     flex: 1,
-    marginRight: 16,
+    marginRight: 14,
   },
   settingLabel: {
     fontSize: 16,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   settingDescription: {
-    fontSize: 14,
+    fontSize: 13,
     color: colors.textSecondary,
-    lineHeight: 20,
+    lineHeight: 18,
   },
   timeButton: {
     backgroundColor: colors.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 10,
   },
   timeText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     color: colors.background,
   },
   infoBox: {
     backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 16,
-    marginBottom: 24,
+    borderRadius: 10,
+    padding: 14,
+    marginTop: 8,
   },
   infoText: {
-    fontSize: 14,
+    fontSize: 13,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 18,
   },
   buttonContainer: {
-    paddingHorizontal: 24,
-    paddingVertical: 20,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
+    width: '100%',
+    paddingTop: 20,
   },
 });
