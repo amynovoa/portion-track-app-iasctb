@@ -247,8 +247,9 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: 8,
-    height: 100,
-    width: '100%',
+    height: 160,
+    width: 160,
+    alignSelf: 'center',
   },
   logo: {
     width: '100%',
