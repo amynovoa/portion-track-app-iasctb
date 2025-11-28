@@ -117,7 +117,7 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Cottage cheese', diet: 'vegetarian' },
       { name: 'Regular yogurt', diet: 'vegetarian' },
       { name: 'Milk', diet: 'vegetarian' },
-      { name: 'Cheese', diet: 'vegetarian' },
+      { name: 'Low fat cheese', diet: 'vegetarian' },
       { name: 'Kefir', diet: 'vegetarian' },
       { name: 'Plant-based yogurt', diet: 'vegan' },
       { name: 'Almond milk', diet: 'vegan' },

@@ -15,7 +15,7 @@ export function getDefaultTargets(goal: Goal): Omit<DailyTargets, 'date'> {
         legumes: 1,
         water: 8,
         alcohol: 1,
-        dairy: 0,
+        dairy: 2,
       };
     case 'maintenance':
       return {
@@ -28,7 +28,7 @@ export function getDefaultTargets(goal: Goal): Omit<DailyTargets, 'date'> {
         legumes: 1,
         water: 8,
         alcohol: 1,
-        dairy: 1,
+        dairy: 2,
       };
     case 'heart_health':
       return {
@@ -41,7 +41,7 @@ export function getDefaultTargets(goal: Goal): Omit<DailyTargets, 'date'> {
         legumes: 2,
         water: 8,
         alcohol: 1,
-        dairy: 0,
+        dairy: 2,
       };
   }
 }
