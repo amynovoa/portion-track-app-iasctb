@@ -78,6 +78,28 @@ export default function HealthyOptionsSheet({
                 </View>
               ))}
             </View>
+
+            {data.portionSizes && data.portionSizes.length > 0 && (
+              <View style={styles.portionSizeSection}>
+                <View style={styles.portionSizeHeader}>
+                  <IconSymbol
+                    ios_icon_name="scalemass.fill"
+                    android_material_icon_name="scale"
+                    size={20}
+                    color={colors.primary}
+                  />
+                  <Text style={styles.portionSizeTitle}>PORTION SIZE</Text>
+                </View>
+                <View style={styles.portionSizeList}>
+                  {data.portionSizes.map((portion, index) => (
+                    <View key={index} style={styles.portionSizeItem}>
+                      <Text style={styles.bullet}>•</Text>
+                      <Text style={styles.portionSizeText}>{portion}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
           </ScrollView>
         </View>
       </View>
@@ -160,5 +182,37 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.background,
+  },
+  portionSizeSection: {
+    marginTop: 24,
+    paddingTop: 24,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  portionSizeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  portionSizeTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    letterSpacing: 0.5,
+  },
+  portionSizeList: {
+    gap: 10,
+  },
+  portionSizeItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  portionSizeText: {
+    flex: 1,
+    fontSize: 15,
+    color: colors.text,
+    lineHeight: 22,
   },
 });

@@ -65,5 +65,6 @@ export interface ReferenceOptions {
     title: string;
     tip: string;
     options: FoodOption[];
+    portionSizes?: string[];
   };
 }

@@ -15,6 +15,15 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Lentils', diet: 'vegan' },
       { name: 'Black beans', diet: 'vegan' },
     ],
+    portionSizes: [
+      '3 oz cooked chicken, turkey, or fish',
+      '2 eggs',
+      '1/2 cup egg whites',
+      '1/2 cup tofu or tempeh',
+      '1/2 cup cooked beans or lentils',
+      '1/4 cup nuts or seeds',
+      'Palm-sized portion of meat',
+    ],
   },
   veggies: {
     title: 'Vegetable Options',
@@ -35,6 +44,12 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Cucumber', diet: 'vegan' },
       { name: 'Mushrooms', diet: 'vegan' },
     ],
+    portionSizes: [
+      '1 cup raw vegetables',
+      '1/2 cup cooked vegetables',
+      '1 cup leafy greens',
+      '1/2 cup broth-based vegetable soup',
+    ],
   },
   fruit: {
     title: 'Fruit Options',
@@ -45,6 +60,13 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Orange', diet: 'vegan' },
       { name: 'Banana', diet: 'vegan' },
       { name: 'Grapes', diet: 'vegan' },
+    ],
+    portionSizes: [
+      '1 medium piece of fruit',
+      '1 cup berries',
+      '1 cup chopped fruit',
+      '1/2 cup dried fruit',
+      '1/2 grapefruit',
     ],
   },
   wholeGrains: {
@@ -57,6 +79,13 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Whole-wheat pasta', diet: 'vegan' },
       { name: 'Corn tortillas', diet: 'vegan' },
     ],
+    portionSizes: [
+      '1/2 cup cooked whole grains',
+      '1 slice whole grain bread',
+      '1 small whole grain tortilla',
+      '1/2 cup oatmeal',
+      '1/3 cup cooked whole grain pasta',
+    ],
   },
   fats: {
     title: 'Healthy Fat Options',
@@ -67,6 +96,14 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Olives', diet: 'vegan' },
       { name: 'Tahini', diet: 'vegan' },
       { name: 'Nut butter', diet: 'vegetarian' },
+    ],
+    portionSizes: [
+      '1 tbsp olive oil',
+      '1/4 avocado',
+      '1 tbsp chia or flax seeds',
+      '1 tbsp nut butter',
+      '8–10 olives',
+      '2 tbsp hummus',
     ],
   },
   nutsSeeds: {
@@ -79,6 +116,12 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Chia seeds', diet: 'vegan' },
       { name: 'Flax seeds', diet: 'vegan' },
     ],
+    portionSizes: [
+      '1/4 cup nuts',
+      '2 tbsp seeds',
+      '2 tbsp nut butter',
+      '1 oz nuts (small handful)',
+    ],
   },
   legumes: {
     title: 'Legume Options',
@@ -90,6 +133,13 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Kidney beans', diet: 'vegan' },
       { name: 'Hummus', diet: 'vegan' },
     ],
+    portionSizes: [
+      '1/2 cup cooked beans',
+      '1/2 cup lentils',
+      '1/2 cup chickpeas',
+      '1/2 cup split peas',
+      '1/2 cup edamame',
+    ],
   },
   water: {
     title: 'Hydration',
@@ -99,6 +149,9 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Herbal tea', diet: 'vegan' },
       { name: 'Sparkling water', diet: 'vegan' },
     ],
+    portionSizes: [
+      '1 cup (8 oz)',
+    ],
   },
   alcohol: {
     title: 'Alcohol',
@@ -107,6 +160,11 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Wine (5 oz)', diet: 'vegan' },
       { name: 'Beer (12 oz)', diet: 'vegan' },
       { name: 'Spirits (1.5 oz)', diet: 'vegan' },
+    ],
+    portionSizes: [
+      '5 oz wine',
+      '12 oz beer',
+      '1.5 oz liquor',
     ],
   },
   dairy: {
@@ -124,6 +182,13 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Soy milk', diet: 'vegan' },
       { name: 'Oat milk', diet: 'vegan' },
       { name: 'Plant-based cheese', diet: 'vegan' },
+    ],
+    portionSizes: [
+      '1 cup milk or plant-based milk',
+      '3/4 cup yogurt',
+      '1 oz cheese',
+      '1/2 cup cottage cheese',
+      '1 cup kefir',
     ],
   },
 };
