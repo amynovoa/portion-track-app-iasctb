@@ -9,7 +9,7 @@ export default function WelcomeScreen() {
     <View style={styles.container}>
       <View style={styles.content}>
         <Image
-          source={require('@/assets/images/natively-dark.png')}
+          source={require('@/assets/images/portiontracker_header_1600x400.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 120,
-    height: 120,
+    width: 280,
+    height: 70,
     marginBottom: 32,
   },
   title: {
