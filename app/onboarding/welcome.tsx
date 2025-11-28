@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { colors, commonStyles, buttonStyles } from '@/styles/commonStyles';
 
@@ -8,11 +8,9 @@ export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Image
-          source={require('@/assets/images/portiontracker_header_1600x400.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>Portion Track</Text>
+        </View>
         <Text style={styles.title}>Welcome to Portion Track</Text>
         <Text style={styles.subtitle}>
           Track your daily food portions by food group, not calories
@@ -47,10 +45,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  logo: {
-    width: 280,
-    height: 70,
+  logoContainer: {
     marginBottom: 32,
+  },
+  logoText: {
+    fontSize: 40,
+    fontWeight: '700',
+    color: colors.primary,
+    textAlign: 'center',
   },
   title: {
     fontSize: 32,

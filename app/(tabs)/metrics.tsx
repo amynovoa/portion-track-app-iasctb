@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Platform, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, buttonStyles } from '@/styles/commonStyles';
 import { storage } from '@/utils/storage';
@@ -71,11 +71,9 @@ export default function MetricsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          source={require('@/assets/images/portiontracker_header_1600x400.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>Portion Track</Text>
+        </View>
         <View style={styles.headerRow}>
           <Text style={styles.headerTitle}>Weight Metrics</Text>
           <TouchableOpacity onPress={() => setShowAddForm(!showAddForm)}>
@@ -153,10 +151,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  logo: {
-    width: 200,
-    height: 50,
+  logoContainer: {
     marginBottom: 12,
+  },
+  logoText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.primary,
+    textAlign: 'center',
   },
   headerRow: {
     flexDirection: 'row',

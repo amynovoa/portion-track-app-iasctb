@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Alert, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Platform, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors, commonStyles } from '@/styles/commonStyles';
@@ -132,11 +132,9 @@ export default function TodayScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          source={require('@/assets/images/portiontracker_header_1600x400.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>Portion Track</Text>
+        </View>
         <Text style={styles.headerTitle}>Today&apos;s Portions</Text>
         <Text style={styles.headerDate}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</Text>
       </View>
@@ -243,10 +241,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  logo: {
-    width: 200,
-    height: 50,
+  logoContainer: {
     marginBottom: 8,
+  },
+  logoText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.primary,
+    textAlign: 'center',
   },
   headerTitle: {
     fontSize: 24,

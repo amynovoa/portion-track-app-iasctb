@@ -1,14 +1,15 @@
+
 {
   "expo": {
     "name": "Portion Track",
     "slug": "Portion Track",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/portiontracker_icon_1024.png",
+    "icon": "./assets/images/natively-dark.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/portiontracker_splash_2048.png",
+      "image": "./assets/images/natively-dark.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
@@ -21,14 +22,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/portiontracker_icon_1024.png",
+        "foregroundImage": "./assets/images/natively-dark.png",
         "backgroundColor": "#FFFFFF"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.portiontrack.app"
     },
     "web": {
-      "favicon": "./assets/images/portiontracker_icon_1024.png",
+      "favicon": "./assets/images/natively-dark.png",
       "bundler": "metro"
     },
     "plugins": [
@@ -43,6 +44,5 @@
     "extra": {
       "router": {}
     }
-  },
-  "scheme": "Portion Track"
+  }
 }

@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, commonStyles } from '@/styles/commonStyles';
 import { storage } from '@/utils/storage';
@@ -64,11 +64,9 @@ export default function ProgressScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          source={require('@/assets/images/portiontracker_header_1600x400.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>Portion Track</Text>
+        </View>
         <Text style={styles.headerTitle}>Progress</Text>
       </View>
 
@@ -157,10 +155,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  logo: {
-    width: 200,
-    height: 50,
+  logoContainer: {
     marginBottom: 12,
+  },
+  logoText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.primary,
+    textAlign: 'center',
   },
   headerTitle: {
     fontSize: 24,

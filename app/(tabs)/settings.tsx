@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Platform, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Platform, TextInput } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
@@ -163,11 +163,9 @@ export default function SettingsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          source={require('@/assets/images/portiontracker_header_1600x400.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>Portion Track</Text>
+        </View>
         <Text style={styles.headerTitle}>Settings</Text>
       </View>
 
@@ -337,10 +335,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  logo: {
-    width: 200,
-    height: 50,
+  logoContainer: {
     marginBottom: 12,
+  },
+  logoText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.primary,
+    textAlign: 'center',
   },
   headerTitle: {
     fontSize: 24,
