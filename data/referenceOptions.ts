@@ -8,6 +8,8 @@ export const referenceOptions: ReferenceOptions = {
     options: [
       { name: 'Chicken breast', diet: 'omnivore' },
       { name: 'Salmon', diet: 'omnivore' },
+      { name: 'Protein Powder', diet: 'omnivore' },
+      { name: 'Lean beef', diet: 'omnivore' },
       { name: 'Eggs', diet: 'vegetarian' },
       { name: 'Tofu', diet: 'vegan' },
       { name: 'Lentils', diet: 'vegan' },
