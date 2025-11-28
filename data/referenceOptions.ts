@@ -11,6 +11,7 @@ export const referenceOptions: ReferenceOptions = {
       { name: 'Protein Powder', diet: 'omnivore' },
       { name: 'Lean beef', diet: 'omnivore' },
       { name: 'Eggs', diet: 'vegetarian' },
+      { name: 'Egg Whites', diet: 'vegetarian' },
       { name: 'Tofu', diet: 'vegan' },
       { name: 'Lentils', diet: 'vegan' },
       { name: 'Black beans', diet: 'vegan' },
