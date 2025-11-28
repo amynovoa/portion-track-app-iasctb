@@ -144,8 +144,8 @@ export default function ProgressScreen() {
         {logs.length === 0 ? (
           <View style={styles.emptyContainer}>
             <IconSymbol
-              ios_icon_name="chart.bar"
-              android_material_icon_name="bar_chart"
+              ios_icon_name="chart.bar.fill"
+              android_material_icon_name="insert_chart"
               size={64}
               color={colors.textSecondary}
             />
@@ -159,7 +159,7 @@ export default function ProgressScreen() {
                 <View style={styles.statIcon}>
                   <IconSymbol
                     ios_icon_name="flame.fill"
-                    android_material_icon_name="local_fire_department"
+                    android_material_icon_name="whatshot"
                     size={32}
                     color={colors.primary}
                   />
@@ -172,7 +172,7 @@ export default function ProgressScreen() {
                 <View style={styles.statIcon}>
                   <IconSymbol
                     ios_icon_name="calendar"
-                    android_material_icon_name="calendar_today"
+                    android_material_icon_name="event"
                     size={32}
                     color={colors.primary}
                   />
