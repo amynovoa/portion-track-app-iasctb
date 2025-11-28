@@ -25,13 +25,13 @@ export default function TabLayout() {
     {
       name: 'progress',
       route: '/(tabs)/progress',
-      icon: 'show_chart',
+      icon: 'trending_up',
       label: 'Progress',
     },
     {
       name: 'metrics',
       route: '/(tabs)/metrics',
-      icon: 'monitor_weight',
+      icon: 'assessment',
       label: 'Metrics',
     },
     {
