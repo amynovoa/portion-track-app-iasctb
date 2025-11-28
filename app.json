@@ -5,11 +5,11 @@
     "slug": "Portion Track",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/natively-dark.png",
+    "icon": "./assets/images/5cef0cc8-0b86-4da4-86ba-244665f65041.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/natively-dark.png",
+      "image": "./assets/images/a8b6ca2d-aad0-43bb-b5fe-a3c6bd7e7585.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
@@ -22,14 +22,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/natively-dark.png",
+        "foregroundImage": "./assets/images/5cef0cc8-0b86-4da4-86ba-244665f65041.png",
         "backgroundColor": "#FFFFFF"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.portiontrack.app"
     },
     "web": {
-      "favicon": "./assets/images/natively-dark.png",
+      "favicon": "./assets/images/5cef0cc8-0b86-4da4-86ba-244665f65041.png",
       "bundler": "metro"
     },
     "plugins": [

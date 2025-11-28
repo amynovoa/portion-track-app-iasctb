@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { colors, commonStyles, buttonStyles } from '@/styles/commonStyles';
 
@@ -9,7 +9,11 @@ export default function WelcomeScreen() {
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logoText}>Portion Track</Text>
+          <Image
+            source={require('@/assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         </View>
         <Text style={styles.title}>Welcome to Portion Track</Text>
         <Text style={styles.subtitle}>
@@ -47,12 +51,12 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: 32,
+    height: 120,
+    width: '100%',
   },
-  logoText: {
-    fontSize: 40,
-    fontWeight: '700',
-    color: colors.primary,
-    textAlign: 'center',
+  logo: {
+    width: '100%',
+    height: '100%',
   },
   title: {
     fontSize: 32,
