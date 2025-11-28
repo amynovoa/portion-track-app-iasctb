@@ -53,6 +53,23 @@ export default function ProgressScreen() {
 
     if (targetsData && logsData.length > 0) {
       calculateStats(logsData, targetsData);
+    } else {
+      // Reset stats when no data
+      setStats({
+        streak: 0,
+        totalDays: 0,
+      });
+      setAdherence({
+        protein: 0,
+        veggies: 0,
+        fruit: 0,
+        wholeGrains: 0,
+        fats: 0,
+        nutsSeeds: 0,
+        legumes: 0,
+        water: 0,
+        dairy: 0,
+      });
     }
   };
 
@@ -95,7 +112,7 @@ export default function ProgressScreen() {
     }
 
     setStats({
-      streak,
+      streak: streak,
       totalDays: logs.length,
     });
   };
@@ -151,7 +168,7 @@ export default function ProgressScreen() {
                 />
               </View>
               <Text style={styles.statLabel}>Current Streak</Text>
-              <Text style={styles.statValue}>{stats.streak} days</Text>
+              <Text style={styles.statValue}>{stats.streak || 0} days</Text>
             </View>
 
             <View style={styles.statCard}>
@@ -164,7 +181,7 @@ export default function ProgressScreen() {
                 />
               </View>
               <Text style={styles.statLabel}>Total Days Tracked</Text>
-              <Text style={styles.statValue}>{stats.totalDays}</Text>
+              <Text style={styles.statValue}>{stats.totalDays || 0}</Text>
             </View>
 
             <Text style={styles.sectionTitle}>Target Adherence</Text>
