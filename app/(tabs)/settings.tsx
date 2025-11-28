@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: 12,
-    height: 60,
+    height: 100,
     width: '100%',
   },
   logo: {
