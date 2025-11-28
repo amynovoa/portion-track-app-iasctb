@@ -15,7 +15,8 @@ export default function WelcomeScreen() {
             resizeMode="contain"
           />
         </View>
-        <Text style={styles.title}>Welcome to Portion Track</Text>
+        <Text style={styles.appName}>Portion Track</Text>
+        <Text style={styles.title}>Welcome</Text>
         <Text style={styles.subtitle}>
           Track your daily food portions by food group, not calories
         </Text>
@@ -50,17 +51,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoContainer: {
-    marginBottom: 32,
-    height: 120,
+    marginBottom: 24,
+    height: 400,
     width: '100%',
   },
   logo: {
     width: '100%',
     height: '100%',
   },
-  title: {
-    fontSize: 32,
+  appName: {
+    fontSize: 36,
     fontWeight: '700',
+    color: colors.primary,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '600',
     color: colors.text,
     textAlign: 'center',
     marginBottom: 16,
