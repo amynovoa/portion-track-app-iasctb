@@ -17,9 +17,9 @@ const foodGroups: { key: FoodGroup; label: string; icon: keyof typeof MaterialCo
   { key: 'fats', label: 'Healthy Fats', icon: 'water' },
   { key: 'nutsSeeds', label: 'Nuts & Seeds', icon: 'peanut' },
   { key: 'legumes', label: 'Legumes', icon: 'seed' },
+  { key: 'dairy', label: 'Dairy', icon: 'cheese' },
   { key: 'water', label: 'Water', icon: 'cup-water' },
   { key: 'alcohol', label: 'Alcohol', icon: 'glass-wine' },
-  { key: 'dairy', label: 'Dairy', icon: 'cheese' },
 ];
 
 export default function TodayScreen() {
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: 8,
-    height: 60,
+    height: 80,
     width: '100%',
   },
   logo: {
