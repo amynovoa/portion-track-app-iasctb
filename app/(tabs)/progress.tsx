@@ -164,8 +164,8 @@ export default function ProgressScreen() {
                     color={colors.primary}
                   />
                 </View>
+                <Text style={styles.statValue}>{String(stats.streak)}</Text>
                 <Text style={styles.statLabel}>Current Streak</Text>
-                <Text style={styles.statValue}>{stats.streak} days</Text>
               </View>
 
               <View style={styles.statCard}>
@@ -177,8 +177,8 @@ export default function ProgressScreen() {
                     color={colors.primary}
                   />
                 </View>
+                <Text style={styles.statValue}>{String(stats.totalDays)}</Text>
                 <Text style={styles.statLabel}>Total Days Tracked</Text>
-                <Text style={styles.statValue}>{stats.totalDays}</Text>
               </View>
             </View>
 
@@ -263,11 +263,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: colors.textSecondary,
-    marginBottom: 8,
+    marginTop: 8,
     textAlign: 'center',
   },
   statValue: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
     color: colors.text,
   },
