@@ -1,4 +1,3 @@
-
 {
   "expo": {
     "name": "Portion Track",
@@ -44,5 +43,6 @@
     "extra": {
       "router": {}
     }
-  }
+  },
+  "scheme": "Portion Track"
 }
