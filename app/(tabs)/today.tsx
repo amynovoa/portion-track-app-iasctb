@@ -133,7 +133,7 @@ export default function TodayScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={require('@/assets/images/natively-dark.png')}
+          source={require('@/assets/images/portiontracker_header_1600x400.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -244,8 +244,8 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 200,
+    height: 50,
     marginBottom: 8,
   },
   headerTitle: {

@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, Platform, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, buttonStyles } from '@/styles/commonStyles';
 import { storage } from '@/utils/storage';
@@ -71,15 +71,22 @@ export default function MetricsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Weight Metrics</Text>
-        <TouchableOpacity onPress={() => setShowAddForm(!showAddForm)}>
-          <IconSymbol
-            ios_icon_name={showAddForm ? 'xmark.circle.fill' : 'plus.circle.fill'}
-            android_material_icon_name={showAddForm ? 'cancel' : 'add_circle'}
-            size={32}
-            color={colors.primary}
-          />
-        </TouchableOpacity>
+        <Image
+          source={require('@/assets/images/portiontracker_header_1600x400.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <View style={styles.headerRow}>
+          <Text style={styles.headerTitle}>Weight Metrics</Text>
+          <TouchableOpacity onPress={() => setShowAddForm(!showAddForm)}>
+            <IconSymbol
+              ios_icon_name={showAddForm ? 'xmark.circle.fill' : 'plus.circle.fill'}
+              android_material_icon_name={showAddForm ? 'cancel' : 'add_circle'}
+              size={32}
+              color={colors.primary}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {showAddForm && (
@@ -140,16 +147,25 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? 48 : 0,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 20,
     paddingHorizontal: 24,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
+  logo: {
+    width: 200,
+    height: 50,
+    marginBottom: 12,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
     color: colors.text,
   },
