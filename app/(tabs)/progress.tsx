@@ -7,14 +7,35 @@ import { storage } from '@/utils/storage';
 import { DailyLog, DailyTargets } from '@/types';
 import { IconSymbol } from '@/components/IconSymbol';
 
+interface AdherenceStats {
+  protein: number;
+  veggies: number;
+  fruit: number;
+  wholeGrains: number;
+  fats: number;
+  nutsSeeds: number;
+  legumes: number;
+  water: number;
+  dairy: number;
+}
+
 export default function ProgressScreen() {
   const [logs, setLogs] = useState<DailyLog[]>([]);
   const [targets, setTargets] = useState<DailyTargets | null>(null);
   const [stats, setStats] = useState({
-    proteinAdherence: 0,
-    veggiesAdherence: 0,
     streak: 0,
     totalDays: 0,
+  });
+  const [adherence, setAdherence] = useState<AdherenceStats>({
+    protein: 0,
+    veggies: 0,
+    fruit: 0,
+    wholeGrains: 0,
+    fats: 0,
+    nutsSeeds: 0,
+    legumes: 0,
+    water: 0,
+    dairy: 0,
   });
 
   useFocusEffect(
@@ -36,12 +57,32 @@ export default function ProgressScreen() {
   };
 
   const calculateStats = (logs: DailyLog[], targets: DailyTargets) => {
+    // Calculate adherence for each food group
     const proteinHits = logs.filter((log) => log.protein >= targets.protein).length;
     const veggiesHits = logs.filter((log) => log.veggies >= targets.veggies).length;
+    const fruitHits = logs.filter((log) => log.fruit >= targets.fruit).length;
+    const wholeGrainsHits = logs.filter((log) => log.wholeGrains >= targets.wholeGrains).length;
+    const fatsHits = logs.filter((log) => log.fats >= targets.fats).length;
+    const nutsSeedsHits = logs.filter((log) => log.nutsSeeds >= targets.nutsSeeds).length;
+    const legumesHits = logs.filter((log) => log.legumes >= targets.legumes).length;
+    const waterHits = logs.filter((log) => log.water >= targets.water).length;
+    const dairyHits = logs.filter((log) => log.dairy >= targets.dairy).length;
 
-    const proteinAdherence = logs.length > 0 ? Math.round((proteinHits / logs.length) * 100) : 0;
-    const veggiesAdherence = logs.length > 0 ? Math.round((veggiesHits / logs.length) * 100) : 0;
+    const totalLogs = logs.length;
 
+    setAdherence({
+      protein: totalLogs > 0 ? Math.round((proteinHits / totalLogs) * 100) : 0,
+      veggies: totalLogs > 0 ? Math.round((veggiesHits / totalLogs) * 100) : 0,
+      fruit: totalLogs > 0 ? Math.round((fruitHits / totalLogs) * 100) : 0,
+      wholeGrains: totalLogs > 0 ? Math.round((wholeGrainsHits / totalLogs) * 100) : 0,
+      fats: totalLogs > 0 ? Math.round((fatsHits / totalLogs) * 100) : 0,
+      nutsSeeds: totalLogs > 0 ? Math.round((nutsSeedsHits / totalLogs) * 100) : 0,
+      legumes: totalLogs > 0 ? Math.round((legumesHits / totalLogs) * 100) : 0,
+      water: totalLogs > 0 ? Math.round((waterHits / totalLogs) * 100) : 0,
+      dairy: totalLogs > 0 ? Math.round((dairyHits / totalLogs) * 100) : 0,
+    });
+
+    // Calculate streak
     const sortedLogs = [...logs].sort((a, b) => b.date.localeCompare(a.date));
     let streak = 0;
     for (const log of sortedLogs) {
@@ -54,12 +95,24 @@ export default function ProgressScreen() {
     }
 
     setStats({
-      proteinAdherence,
-      veggiesAdherence,
       streak,
       totalDays: logs.length,
     });
   };
+
+  const renderAdherenceCard = (label: string, percentage: number) => (
+    <View style={styles.adherenceCard}>
+      <View style={styles.adherenceHeader}>
+        <Text style={styles.adherenceLabel}>{label}</Text>
+        <Text style={styles.adherencePercent}>{percentage}%</Text>
+      </View>
+      <View style={styles.progressBar}>
+        <View
+          style={[styles.progressFill, { width: `${percentage}%` }]}
+        />
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -116,29 +169,15 @@ export default function ProgressScreen() {
 
             <Text style={styles.sectionTitle}>Target Adherence</Text>
 
-            <View style={styles.adherenceCard}>
-              <View style={styles.adherenceHeader}>
-                <Text style={styles.adherenceLabel}>Protein Target</Text>
-                <Text style={styles.adherencePercent}>{stats.proteinAdherence}%</Text>
-              </View>
-              <View style={styles.progressBar}>
-                <View
-                  style={[styles.progressFill, { width: `${stats.proteinAdherence}%` }]}
-                />
-              </View>
-            </View>
-
-            <View style={styles.adherenceCard}>
-              <View style={styles.adherenceHeader}>
-                <Text style={styles.adherenceLabel}>Veggies Target</Text>
-                <Text style={styles.adherencePercent}>{stats.veggiesAdherence}%</Text>
-              </View>
-              <View style={styles.progressBar}>
-                <View
-                  style={[styles.progressFill, { width: `${stats.veggiesAdherence}%` }]}
-                />
-              </View>
-            </View>
+            {renderAdherenceCard('Protein', adherence.protein)}
+            {renderAdherenceCard('Veggies', adherence.veggies)}
+            {renderAdherenceCard('Fruit', adherence.fruit)}
+            {renderAdherenceCard('Whole Grains', adherence.wholeGrains)}
+            {renderAdherenceCard('Fats', adherence.fats)}
+            {renderAdherenceCard('Nuts & Seeds', adherence.nutsSeeds)}
+            {renderAdherenceCard('Legumes', adherence.legumes)}
+            {renderAdherenceCard('Dairy', adherence.dairy)}
+            {renderAdherenceCard('Water', adherence.water)}
           </>
         )}
       </ScrollView>
