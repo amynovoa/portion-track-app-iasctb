@@ -31,8 +31,8 @@ export default function TabLayout() {
     {
       name: 'metrics',
       route: '/(tabs)/metrics',
-      icon: 'assessment',
-      label: 'Metrics',
+      icon: 'monitor_weight',
+      label: 'Weight',
     },
     {
       name: 'settings',
