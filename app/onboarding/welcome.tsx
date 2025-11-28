@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     paddingHorizontal: 24,
-    paddingTop: 60,
+    paddingTop: 50,
     paddingBottom: 40,
   },
   content: {
@@ -51,23 +51,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoContainer: {
-    marginBottom: 16,
-    height: 180,
-    width: 180,
+    marginBottom: 20,
+    height: 240,
+    width: 240,
   },
   logo: {
     width: '100%',
     height: '100%',
   },
   appName: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: '700',
     color: colors.primary,
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '600',
     color: colors.text,
     textAlign: 'center',
