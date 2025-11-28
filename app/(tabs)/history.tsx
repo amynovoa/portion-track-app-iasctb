@@ -114,8 +114,8 @@ export default function HistoryScreen() {
                   </Text>
                 </View>
                 <IconSymbol
-                  ios_icon_name="list.bullet.circle.fill"
-                  android_material_icon_name="format_list_bulleted"
+                  ios_icon_name="list.bullet"
+                  android_material_icon_name="list"
                   size={28}
                   color={colors.primary}
                 />
