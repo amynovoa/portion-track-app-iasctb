@@ -1,3 +1,4 @@
+
 /* eslint-disable */
 
 // @eslint-ignore-file
@@ -50,6 +51,11 @@ export default function EditableElement_(_props: PropsWithChildren<any>) {
   // If we are not running in the web the windows will causes
   // issues hence editable mode is not enabled.
   if (Platform.OS !== "web") {
+    return cloneElement(children, props);
+  }
+
+  // Safety check: if __trace is not defined, just return the children as-is
+  if (!props.__trace) {
     return cloneElement(children, props);
   }
 
