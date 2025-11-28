@@ -1,24 +1,24 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Alert, Platform, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors, commonStyles } from '@/styles/commonStyles';
-import FoodGroupCard from '@/components/FoodGroupCard';
 import HealthyOptionsSheet from '@/components/HealthyOptionsSheet';
 import { storage } from '@/utils/storage';
 import { DailyLog, DailyTargets, FoodGroup, User } from '@/types';
 import { getTodayDate, shouldResetLog } from '@/utils/dateUtils';
 
-const foodGroups: { key: FoodGroup; label: string }[] = [
-  { key: 'protein', label: 'Protein' },
-  { key: 'veggies', label: 'Veggies' },
-  { key: 'fruit', label: 'Fruit' },
-  { key: 'wholeGrains', label: 'Whole Grains' },
-  { key: 'fats', label: 'Healthy Fats' },
-  { key: 'nutsSeeds', label: 'Nuts & Seeds' },
-  { key: 'legumes', label: 'Legumes' },
-  { key: 'water', label: 'Water' },
-  { key: 'alcohol', label: 'Alcohol' },
+const foodGroups: { key: FoodGroup; label: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }[] = [
+  { key: 'protein', label: 'Protein', icon: 'food-drumstick' },
+  { key: 'veggies', label: 'Veggies', icon: 'leaf' },
+  { key: 'fruit', label: 'Fruit', icon: 'food-apple' },
+  { key: 'wholeGrains', label: 'Whole Grains', icon: 'barley' },
+  { key: 'fats', label: 'Healthy Fats', icon: 'water' },
+  { key: 'nutsSeeds', label: 'Nuts & Seeds', icon: 'peanut' },
+  { key: 'legumes', label: 'Legumes', icon: 'seed' },
+  { key: 'water', label: 'Water', icon: 'cup-water' },
+  { key: 'alcohol', label: 'Alcohol', icon: 'glass-wine' },
 ];
 
 export default function TodayScreen() {
@@ -142,21 +142,71 @@ export default function TodayScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.grid}>
-          {foodGroups.map((group) => (
-            <View key={group.key} style={styles.gridItem}>
-              <FoodGroupCard
-                group={group.key}
-                label={group.label}
-                current={log[group.key]}
-                target={targets[group.key]}
-                onIncrement={() => handleIncrement(group.key)}
-                onDecrement={() => handleDecrement(group.key)}
-                onInfo={() => handleInfo(group.key)}
-              />
+        {foodGroups.map((group, index) => {
+          const current = log[group.key];
+          const target = targets[group.key];
+          const isOverTarget = current > target;
+          const progress = target > 0 ? (current / target) * 100 : 0;
+
+          return (
+            <View key={index} style={[styles.row, isOverTarget && styles.rowOverTarget]}>
+              <View style={styles.iconContainer}>
+                <MaterialCommunityIcons
+                  name={group.icon}
+                  size={28}
+                  color={colors.primary}
+                />
+              </View>
+
+              <View style={styles.rowContent}>
+                <View style={styles.rowHeader}>
+                  <Text style={styles.rowLabel}>{group.label}</Text>
+                  <TouchableOpacity onPress={() => handleInfo(group.key)} style={styles.infoButton}>
+                    <MaterialCommunityIcons
+                      name="information-outline"
+                      size={20}
+                      color={colors.textSecondary}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.progressContainer}>
+                  <View style={styles.progressBar}>
+                    <View
+                      style={[
+                        styles.progressFill,
+                        {
+                          width: `${Math.min(progress, 100)}%`,
+                          backgroundColor: isOverTarget ? colors.warning : colors.primary,
+                        },
+                      ]}
+                    />
+                  </View>
+                  <Text style={styles.countText}>
+                    {current} / {target}
+                  </Text>
+                </View>
+
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity
+                    onPress={() => handleDecrement(group.key)}
+                    style={[styles.button, styles.decrementButton]}
+                    disabled={current === 0}
+                  >
+                    <Text style={styles.buttonText}>−</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => handleIncrement(group.key)}
+                    style={[styles.button, styles.incrementButton]}
+                  >
+                    <Text style={[styles.buttonText, styles.incrementText]}>+1</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-          ))}
-        </View>
+          );
+        })}
       </ScrollView>
 
       {selectedGroup && (
@@ -210,13 +260,94 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 100,
   },
-  grid: {
+  row: {
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
+    alignItems: 'center',
+    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)',
+    elevation: 2,
   },
-  gridItem: {
-    width: '31%',
-    minWidth: 100,
+  rowOverTarget: {
+    backgroundColor: colors.highlight,
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  rowContent: {
+    flex: 1,
+  },
+  rowHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  rowLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  infoButton: {
+    padding: 4,
+  },
+  progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  progressBar: {
+    flex: 1,
+    height: 8,
+    backgroundColor: colors.background,
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginRight: 12,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  countText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    minWidth: 50,
+    textAlign: 'right',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  button: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  decrementButton: {
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  incrementButton: {
+    backgroundColor: colors.primary,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  incrementText: {
+    color: colors.background,
   },
 });
