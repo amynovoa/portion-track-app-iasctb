@@ -87,7 +87,7 @@ export default function MetricsScreen() {
             onPress={() => setShowAddForm(!showAddForm)}
           >
             <IconSymbol
-              ios_icon_name="scalemass.fill"
+              ios_icon_name="chart.line.uptrend.xyaxis"
               android_material_icon_name="monitor_weight"
               size={24}
               color={colors.background}
@@ -103,7 +103,7 @@ export default function MetricsScreen() {
         <View style={styles.addForm}>
           <View style={styles.addFormHeader}>
             <IconSymbol
-              ios_icon_name="scalemass"
+              ios_icon_name="chart.line.uptrend.xyaxis"
               android_material_icon_name="monitor_weight"
               size={32}
               color={colors.primary}
@@ -179,7 +179,7 @@ export default function MetricsScreen() {
         {metrics.length === 0 ? (
           <View style={styles.emptyContainer}>
             <IconSymbol
-              ios_icon_name="scalemass"
+              ios_icon_name="chart.line.uptrend.xyaxis"
               android_material_icon_name="monitor_weight"
               size={64}
               color={colors.textSecondary}
