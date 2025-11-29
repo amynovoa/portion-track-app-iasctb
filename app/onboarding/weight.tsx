@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
 import { Goal, DietStyle } from '@/types';
@@ -33,51 +33,61 @@ export default function WeightScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>What&apos;s your current weight?</Text>
-        <Text style={styles.subtitle}>
-          This helps us track your progress over time
-        </Text>
-      </View>
-
-      <View style={styles.content}>
-        <View style={styles.iconContainer}>
-          <IconSymbol
-            ios_icon_name="scalemass.fill"
-            android_material_icon_name="monitor_weight"
-            size={80}
-            color={colors.primary}
-          />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>What&apos;s your current weight?</Text>
+          <Text style={styles.subtitle}>
+            This helps us track your progress over time
+          </Text>
         </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter weight"
-            placeholderTextColor={colors.textSecondary}
-            keyboardType="decimal-pad"
-            value={weight}
-            onChangeText={setWeight}
-            autoFocus
-          />
-          <Text style={styles.unit}>lbs</Text>
+        <View style={styles.content}>
+          <View style={styles.iconContainer}>
+            <IconSymbol
+              ios_icon_name="scalemass.fill"
+              android_material_icon_name="monitor_weight"
+              size={80}
+              color={colors.primary}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter weight"
+              placeholderTextColor={colors.textSecondary}
+              keyboardType="decimal-pad"
+              value={weight}
+              onChangeText={setWeight}
+              autoFocus
+            />
+            <Text style={styles.unit}>lbs</Text>
+          </View>
+
+          <Text style={styles.note}>
+            You can add or update your weight anytime in the Metrics tab
+          </Text>
         </View>
 
-        <Text style={styles.note}>
-          You can add or update your weight anytime in the Metrics tab
-        </Text>
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={buttonStyles.primary} onPress={handleContinue}>
-          <Text style={buttonStyles.text}>Continue</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={buttonStyles.secondary} onPress={handleSkip}>
-          <Text style={buttonStyles.secondaryText}>Skip for now</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={buttonStyles.primary} onPress={handleContinue}>
+            <Text style={buttonStyles.text}>Continue</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={buttonStyles.secondary} onPress={handleSkip}>
+            <Text style={buttonStyles.secondaryText}>Skip for now</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -85,6 +95,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
     paddingTop: 60,
     paddingHorizontal: 24,
     paddingBottom: 40,
@@ -107,6 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    minHeight: 300,
   },
   iconContainer: {
     marginBottom: 40,
@@ -148,5 +162,6 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingTop: 20,
     gap: 12,
+    marginTop: 20,
   },
 });
