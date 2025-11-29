@@ -83,7 +83,7 @@ export default function WeightScreen() {
             >
               <IconSymbol
                 ios_icon_name="arrow.right.circle.fill"
-                android_material_icon_name="arrow_circle_right"
+                android_material_icon_name="arrow-forward"
                 size={56}
                 color={colors.primary}
               />
