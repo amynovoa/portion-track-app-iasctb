@@ -28,103 +28,141 @@ export default function TodayScreen() {
   const [log, setLog] = useState<DailyLog | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<FoodGroup | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const loadData = async () => {
-    console.log('Loading data for Today screen...');
-    const userData = await storage.getUser();
-    const targetsData = await storage.getDailyTargets();
-    const logs = await storage.getDailyLogs();
+  const loadData = useCallback(async () => {
+    console.log('=== Loading data for Today screen ===');
+    setIsLoading(true);
+    
+    try {
+      const userData = await storage.getUser();
+      const targetsData = await storage.getDailyTargets();
+      const logs = await storage.getDailyLogs();
 
-    setUser(userData);
-    setTargets(targetsData);
+      console.log('User data loaded:', userData);
+      console.log('Targets data loaded:', targetsData);
+      console.log('All logs loaded:', logs);
 
-    const today = getTodayDate();
-    let todayLog = logs.find((l) => l.date === today);
+      setUser(userData);
+      setTargets(targetsData);
 
-    console.log('Today date:', today);
-    console.log('Found today log:', todayLog);
+      const today = getTodayDate();
+      console.log('Today date:', today);
+      
+      let todayLog = logs.find((l) => l.date === today);
+      console.log('Found today log:', todayLog);
 
-    if (!todayLog) {
-      console.log('Creating new log for today');
-      todayLog = {
-        date: today,
-        protein: 0,
-        veggies: 0,
-        fruit: 0,
-        wholeGrains: 0,
-        fats: 0,
-        nutsSeeds: 0,
-        legumes: 0,
-        water: 0,
-        alcohol: 0,
-        dairy: 0,
-      };
-      await storage.setDailyLogs([...logs, todayLog]);
-    } else if (userData && shouldResetLog(todayLog.date, userData.resetTime)) {
-      console.log('Resetting log for new day');
-      todayLog = {
-        date: today,
-        protein: 0,
-        veggies: 0,
-        fruit: 0,
-        wholeGrains: 0,
-        fats: 0,
-        nutsSeeds: 0,
-        legumes: 0,
-        water: 0,
-        alcohol: 0,
-        dairy: 0,
-      };
-      const updatedLogs = logs.filter((l) => l.date !== today);
-      await storage.setDailyLogs([...updatedLogs, todayLog]);
+      if (!todayLog) {
+        console.log('Creating new log for today');
+        todayLog = {
+          date: today,
+          protein: 0,
+          veggies: 0,
+          fruit: 0,
+          wholeGrains: 0,
+          fats: 0,
+          nutsSeeds: 0,
+          legumes: 0,
+          water: 0,
+          alcohol: 0,
+          dairy: 0,
+        };
+        const updatedLogs = [...logs, todayLog];
+        await storage.setDailyLogs(updatedLogs);
+        console.log('New log created and saved');
+      } else if (userData && shouldResetLog(todayLog.date, userData.resetTime)) {
+        console.log('Resetting log for new day');
+        todayLog = {
+          date: today,
+          protein: 0,
+          veggies: 0,
+          fruit: 0,
+          wholeGrains: 0,
+          fats: 0,
+          nutsSeeds: 0,
+          legumes: 0,
+          water: 0,
+          alcohol: 0,
+          dairy: 0,
+        };
+        const updatedLogs = logs.filter((l) => l.date !== today);
+        await storage.setDailyLogs([...updatedLogs, todayLog]);
+        console.log('Log reset and saved');
+      }
+
+      console.log('Setting log state to:', todayLog);
+      setLog(todayLog);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setIsLoading(false);
     }
-
-    console.log('Setting log state:', todayLog);
-    setLog(todayLog);
-  };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      console.log('Today screen focused, loading data...');
+      console.log('=== Today screen focused ===');
       loadData();
-    }, [])
+    }, [loadData])
   );
 
-  const updateLog = async (group: FoodGroup, value: number) => {
+  const updateLog = useCallback(async (group: FoodGroup, value: number) => {
     if (!log || !targets) {
       console.log('Cannot update log: log or targets is null');
       return;
     }
 
-    console.log(`Updating ${group} to ${value}`);
-    const updatedLog = { ...log, [group]: value };
+    const today = getTodayDate();
+    console.log(`=== Updating ${group} to ${value} for date ${today} ===`);
     
-    // Update state immediately
+    const updatedLog = { ...log, [group]: value };
+    console.log('Updated log object:', updatedLog);
+    
+    // Update state immediately for responsive UI
     setLog(updatedLog);
 
     // Save to storage
     try {
       const logs = await storage.getDailyLogs();
-      const today = getTodayDate();
+      console.log('Current logs in storage:', logs);
       
       // Find and update today's log, or add it if it doesn't exist
       const logIndex = logs.findIndex((l) => l.date === today);
       
+      let updatedLogs: DailyLog[];
       if (logIndex >= 0) {
-        logs[logIndex] = updatedLog;
+        console.log(`Updating existing log at index ${logIndex}`);
+        updatedLogs = [...logs];
+        updatedLogs[logIndex] = updatedLog;
       } else {
-        logs.push(updatedLog);
+        console.log('Adding new log to array');
+        updatedLogs = [...logs, updatedLog];
       }
       
-      await storage.setDailyLogs(logs);
-      console.log('Log saved successfully:', updatedLog);
+      console.log('Saving updated logs:', updatedLogs);
+      await storage.setDailyLogs(updatedLogs);
+      
+      // Verify the save
+      const verifyLogs = await storage.getDailyLogs();
+      const verifyTodayLog = verifyLogs.find(l => l.date === today);
+      console.log('Verification - Today log after save:', verifyTodayLog);
+      
+      if (verifyTodayLog && verifyTodayLog[group] === value) {
+        console.log('✓ Save verified successfully');
+      } else {
+        console.error('✗ Save verification failed!');
+      }
     } catch (error) {
       console.error('Error saving log:', error);
+      Alert.alert('Error', 'Failed to save your progress. Please try again.');
     }
-  };
+  }, [log, targets]);
 
-  const handleIncrement = (group: FoodGroup) => {
-    if (!log || !targets) return;
+  const handleIncrement = useCallback((group: FoodGroup) => {
+    if (!log || !targets) {
+      console.log('Cannot increment: log or targets is null');
+      return;
+    }
 
     // Hard cap alcohol at 2 portions per day
     if (group === 'alcohol' && log.alcohol >= 2) {
@@ -136,22 +174,30 @@ export default function TodayScreen() {
       return;
     }
 
-    updateLog(group, log[group] + 1);
-  };
+    const newValue = log[group] + 1;
+    console.log(`Incrementing ${group} from ${log[group]} to ${newValue}`);
+    updateLog(group, newValue);
+  }, [log, targets, updateLog]);
 
-  const handleDecrement = (group: FoodGroup) => {
-    if (!log) return;
-    if (log[group] > 0) {
-      updateLog(group, log[group] - 1);
+  const handleDecrement = useCallback((group: FoodGroup) => {
+    if (!log) {
+      console.log('Cannot decrement: log is null');
+      return;
     }
-  };
+    
+    if (log[group] > 0) {
+      const newValue = log[group] - 1;
+      console.log(`Decrementing ${group} from ${log[group]} to ${newValue}`);
+      updateLog(group, newValue);
+    }
+  }, [log, updateLog]);
 
-  const handleInfo = (group: FoodGroup) => {
+  const handleInfo = useCallback((group: FoodGroup) => {
     setSelectedGroup(group);
     setSheetVisible(true);
-  };
+  }, []);
 
-  if (!user || !targets || !log) {
+  if (isLoading || !user || !targets || !log) {
     return (
       <View style={[commonStyles.container, styles.loadingContainer]}>
         <Text style={commonStyles.text}>Loading...</Text>
