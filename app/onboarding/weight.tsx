@@ -60,30 +60,42 @@ export default function WeightScreen() {
             />
           </View>
 
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter weight"
-              placeholderTextColor={colors.textSecondary}
-              keyboardType="decimal-pad"
-              value={weight}
-              onChangeText={setWeight}
-              autoFocus
-            />
-            <Text style={styles.unit}>lbs</Text>
+          <View style={styles.inputRow}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter weight"
+                placeholderTextColor={colors.textSecondary}
+                keyboardType="decimal-pad"
+                value={weight}
+                onChangeText={setWeight}
+                autoFocus
+                returnKeyType="done"
+                onSubmitEditing={handleContinue}
+              />
+              <Text style={styles.unit}>lbs</Text>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.enterButton} 
+              onPress={handleContinue}
+              activeOpacity={0.7}
+            >
+              <IconSymbol
+                ios_icon_name="arrow.right.circle.fill"
+                android_material_icon_name="arrow_circle_right"
+                size={56}
+                color={colors.primary}
+              />
+            </TouchableOpacity>
           </View>
 
           <Text style={styles.note}>
             You can add or update your weight anytime in the Metrics tab
           </Text>
-        </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={buttonStyles.primary} onPress={handleContinue}>
-            <Text style={buttonStyles.text}>Continue</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={buttonStyles.secondary} onPress={handleSkip}>
-            <Text style={buttonStyles.secondaryText}>Skip for now</Text>
+          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+            <Text style={styles.skipText}>Skip for now</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -125,7 +137,15 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginBottom: 40,
   },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 380,
+    gap: 12,
+  },
   inputContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.card,
@@ -134,8 +154,6 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderWidth: 2,
     borderColor: colors.border,
-    width: '100%',
-    maxWidth: 300,
   },
   input: {
     flex: 1,
@@ -150,6 +168,12 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginLeft: 8,
   },
+  enterButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 64,
+    height: 64,
+  },
   note: {
     fontSize: 13,
     color: colors.textSecondary,
@@ -158,10 +182,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     lineHeight: 18,
   },
-  buttonContainer: {
-    width: '100%',
-    paddingTop: 20,
-    gap: 12,
+  skipButton: {
     marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  skipText: {
+    fontSize: 16,
+    color: colors.primary,
+    fontWeight: '600',
   },
 });
