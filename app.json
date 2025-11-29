@@ -1,3 +1,4 @@
+
 {
   "expo": {
     "name": "Portion Track",
@@ -22,7 +23,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/5cef0cc8-0b86-4da4-86ba-244665f65041.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#FFFFFF",
+        "monochromeImage": "./assets/images/5cef0cc8-0b86-4da4-86ba-244665f65041.png"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.portiontrack.app"
