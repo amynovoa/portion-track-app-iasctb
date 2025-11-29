@@ -30,6 +30,7 @@ export default function TodayScreen() {
   const [sheetVisible, setSheetVisible] = useState(false);
 
   const loadData = async () => {
+    console.log('Loading data for Today screen...');
     const userData = await storage.getUser();
     const targetsData = await storage.getDailyTargets();
     const logs = await storage.getDailyLogs();
@@ -40,7 +41,11 @@ export default function TodayScreen() {
     const today = getTodayDate();
     let todayLog = logs.find((l) => l.date === today);
 
+    console.log('Today date:', today);
+    console.log('Found today log:', todayLog);
+
     if (!todayLog) {
+      console.log('Creating new log for today');
       todayLog = {
         date: today,
         protein: 0,
@@ -56,6 +61,7 @@ export default function TodayScreen() {
       };
       await storage.setDailyLogs([...logs, todayLog]);
     } else if (userData && shouldResetLog(todayLog.date, userData.resetTime)) {
+      console.log('Resetting log for new day');
       todayLog = {
         date: today,
         protein: 0,
@@ -73,24 +79,48 @@ export default function TodayScreen() {
       await storage.setDailyLogs([...updatedLogs, todayLog]);
     }
 
+    console.log('Setting log state:', todayLog);
     setLog(todayLog);
   };
 
   useFocusEffect(
     useCallback(() => {
+      console.log('Today screen focused, loading data...');
       loadData();
     }, [])
   );
 
   const updateLog = async (group: FoodGroup, value: number) => {
-    if (!log || !targets) return;
+    if (!log || !targets) {
+      console.log('Cannot update log: log or targets is null');
+      return;
+    }
 
+    console.log(`Updating ${group} to ${value}`);
     const updatedLog = { ...log, [group]: value };
+    
+    // Update state immediately
     setLog(updatedLog);
 
-    const logs = await storage.getDailyLogs();
-    const updatedLogs = logs.map((l) => (l.date === log.date ? updatedLog : l));
-    await storage.setDailyLogs(updatedLogs);
+    // Save to storage
+    try {
+      const logs = await storage.getDailyLogs();
+      const today = getTodayDate();
+      
+      // Find and update today's log, or add it if it doesn't exist
+      const logIndex = logs.findIndex((l) => l.date === today);
+      
+      if (logIndex >= 0) {
+        logs[logIndex] = updatedLog;
+      } else {
+        logs.push(updatedLog);
+      }
+      
+      await storage.setDailyLogs(logs);
+      console.log('Log saved successfully:', updatedLog);
+    } catch (error) {
+      console.error('Error saving log:', error);
+    }
   };
 
   const handleIncrement = (group: FoodGroup) => {
