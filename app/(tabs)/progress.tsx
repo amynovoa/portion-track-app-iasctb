@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, Image, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, commonStyles } from '@/styles/commonStyles';
 import { storage } from '@/utils/storage';
@@ -19,9 +19,12 @@ interface AdherenceStats {
   dairy: number;
 }
 
+type TimeFrame = 'day' | 'week' | 'month';
+
 export default function ProgressScreen() {
   const [logs, setLogs] = useState<DailyLog[]>([]);
   const [targets, setTargets] = useState<DailyTargets | null>(null);
+  const [timeFrame, setTimeFrame] = useState<TimeFrame>('week');
   const [stats, setStats] = useState({
     streak: 0,
     totalDays: 0,
@@ -52,7 +55,7 @@ export default function ProgressScreen() {
     setTargets(targetsData);
 
     if (targetsData && logsData.length > 0) {
-      calculateStats(logsData, targetsData);
+      calculateStats(logsData, targetsData, timeFrame);
     } else {
       setStats({
         streak: 0,
@@ -72,20 +75,75 @@ export default function ProgressScreen() {
     }
   };
 
-  const calculateStats = (logs: DailyLog[], targets: DailyTargets) => {
-    const proteinHits = logs.filter((log) => log.protein >= targets.protein).length;
-    const veggiesHits = logs.filter((log) => log.veggies >= targets.veggies).length;
-    const fruitHits = logs.filter((log) => log.fruit >= targets.fruit).length;
-    const wholeGrainsHits = logs.filter((log) => log.wholeGrains >= targets.wholeGrains).length;
-    const fatsHits = logs.filter((log) => log.fats >= targets.fats).length;
-    const nutsSeedsHits = logs.filter((log) => log.nutsSeeds >= targets.nutsSeeds).length;
-    const legumesHits = logs.filter((log) => log.legumes >= targets.legumes).length;
-    const waterHits = logs.filter((log) => log.water >= targets.water).length;
-    const dairyHits = logs.filter((log) => log.dairy >= targets.dairy).length;
+  const getFilteredLogs = (logs: DailyLog[], timeFrame: TimeFrame): DailyLog[] => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    let cutoffDate: Date;
+    
+    switch (timeFrame) {
+      case 'day':
+        // Just today
+        cutoffDate = today;
+        break;
+      case 'week':
+        // Last 7 days
+        cutoffDate = new Date(today);
+        cutoffDate.setDate(cutoffDate.getDate() - 7);
+        break;
+      case 'month':
+        // Last 30 days
+        cutoffDate = new Date(today);
+        cutoffDate.setDate(cutoffDate.getDate() - 30);
+        break;
+      default:
+        cutoffDate = new Date(0); // All time
+    }
 
-    const totalLogs = logs.length;
+    return logs.filter(log => {
+      const logDate = new Date(log.date);
+      return logDate >= cutoffDate;
+    });
+  };
 
-    setAdherence({
+  const calculateStats = (allLogs: DailyLog[], targets: DailyTargets, selectedTimeFrame: TimeFrame) => {
+    // Filter logs based on timeframe
+    const filteredLogs = getFilteredLogs(allLogs, selectedTimeFrame);
+    
+    console.log(`Calculating stats for ${selectedTimeFrame}: ${filteredLogs.length} logs`);
+
+    if (filteredLogs.length === 0) {
+      setAdherence({
+        protein: 0,
+        veggies: 0,
+        fruit: 0,
+        wholeGrains: 0,
+        fats: 0,
+        nutsSeeds: 0,
+        legumes: 0,
+        water: 0,
+        dairy: 0,
+      });
+      setStats({
+        streak: 0,
+        totalDays: 0,
+      });
+      return;
+    }
+
+    const proteinHits = filteredLogs.filter((log) => log.protein >= targets.protein).length;
+    const veggiesHits = filteredLogs.filter((log) => log.veggies >= targets.veggies).length;
+    const fruitHits = filteredLogs.filter((log) => log.fruit >= targets.fruit).length;
+    const wholeGrainsHits = filteredLogs.filter((log) => log.wholeGrains >= targets.wholeGrains).length;
+    const fatsHits = filteredLogs.filter((log) => log.fats >= targets.fats).length;
+    const nutsSeedsHits = filteredLogs.filter((log) => log.nutsSeeds >= targets.nutsSeeds).length;
+    const legumesHits = filteredLogs.filter((log) => log.legumes >= targets.legumes).length;
+    const waterHits = filteredLogs.filter((log) => log.water >= targets.water).length;
+    const dairyHits = filteredLogs.filter((log) => log.dairy >= targets.dairy).length;
+
+    const totalLogs = filteredLogs.length;
+
+    const newAdherence = {
       protein: totalLogs > 0 ? Math.round((proteinHits / totalLogs) * 100) : 0,
       veggies: totalLogs > 0 ? Math.round((veggiesHits / totalLogs) * 100) : 0,
       fruit: totalLogs > 0 ? Math.round((fruitHits / totalLogs) * 100) : 0,
@@ -95,9 +153,13 @@ export default function ProgressScreen() {
       legumes: totalLogs > 0 ? Math.round((legumesHits / totalLogs) * 100) : 0,
       water: totalLogs > 0 ? Math.round((waterHits / totalLogs) * 100) : 0,
       dairy: totalLogs > 0 ? Math.round((dairyHits / totalLogs) * 100) : 0,
-    });
+    };
 
-    const sortedLogs = [...logs].sort((a, b) => b.date.localeCompare(a.date));
+    console.log('Adherence calculated:', newAdherence);
+    setAdherence(newAdherence);
+
+    // Calculate streak from all logs (not filtered)
+    const sortedLogs = [...allLogs].sort((a, b) => b.date.localeCompare(a.date));
     let streak = 0;
     for (const log of sortedLogs) {
       const totalPortions = log.protein + log.veggies + log.fruit + log.wholeGrains + log.fats + log.nutsSeeds + log.legumes + log.dairy;
@@ -110,23 +172,43 @@ export default function ProgressScreen() {
 
     setStats({
       streak: streak,
-      totalDays: logs.length,
+      totalDays: allLogs.length,
     });
   };
 
+  const handleTimeFrameChange = (newTimeFrame: TimeFrame) => {
+    setTimeFrame(newTimeFrame);
+    if (targets && logs.length > 0) {
+      calculateStats(logs, targets, newTimeFrame);
+    }
+  };
+
   const renderAdherenceCard = (label: string, percentage: number) => (
-    <View style={styles.adherenceCard}>
+    <View style={styles.adherenceCard} key={label}>
       <View style={styles.adherenceHeader}>
         <Text style={styles.adherenceLabel}>{label}</Text>
         <Text style={styles.adherencePercent}>{percentage}%</Text>
       </View>
       <View style={styles.progressBar}>
         <View
-          style={[styles.progressFill, { width: `${percentage}%` }]}
+          style={[styles.progressFill, { width: `${Math.max(0, Math.min(100, percentage))}%` }]}
         />
       </View>
     </View>
   );
+
+  const getTimeFrameLabel = () => {
+    switch (timeFrame) {
+      case 'day':
+        return 'Today';
+      case 'week':
+        return 'Last 7 Days';
+      case 'month':
+        return 'Last 30 Days';
+      default:
+        return 'All Time';
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -182,7 +264,39 @@ export default function ProgressScreen() {
               </View>
             </View>
 
-            <Text style={styles.sectionTitle}>Target Adherence</Text>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Target Adherence</Text>
+              <Text style={styles.timeFrameLabel}>{getTimeFrameLabel()}</Text>
+            </View>
+
+            <View style={styles.timeFrameSelector}>
+              <TouchableOpacity
+                style={[styles.timeFrameButton, timeFrame === 'day' && styles.timeFrameButtonActive]}
+                onPress={() => handleTimeFrameChange('day')}
+              >
+                <Text style={[styles.timeFrameButtonText, timeFrame === 'day' && styles.timeFrameButtonTextActive]}>
+                  Day
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.timeFrameButton, timeFrame === 'week' && styles.timeFrameButtonActive]}
+                onPress={() => handleTimeFrameChange('week')}
+              >
+                <Text style={[styles.timeFrameButtonText, timeFrame === 'week' && styles.timeFrameButtonTextActive]}>
+                  Week
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.timeFrameButton, timeFrame === 'month' && styles.timeFrameButtonActive]}
+                onPress={() => handleTimeFrameChange('month')}
+              >
+                <Text style={[styles.timeFrameButtonText, timeFrame === 'month' && styles.timeFrameButtonTextActive]}>
+                  Month
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             {renderAdherenceCard('Protein', adherence.protein)}
             {renderAdherenceCard('Veggies', adherence.veggies)}
@@ -272,12 +386,47 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text,
   },
+  sectionHeader: {
+    marginTop: 24,
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
     color: colors.text,
-    marginTop: 24,
-    marginBottom: 16,
+  },
+  timeFrameLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textSecondary,
+    marginTop: 4,
+  },
+  timeFrameSelector: {
+    flexDirection: 'row',
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 20,
+    gap: 4,
+  },
+  timeFrameButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  timeFrameButtonActive: {
+    backgroundColor: colors.primary,
+  },
+  timeFrameButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  timeFrameButtonTextActive: {
+    color: '#FFFFFF',
   },
   adherenceCard: {
     backgroundColor: colors.card,
