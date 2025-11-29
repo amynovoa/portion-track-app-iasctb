@@ -44,7 +44,7 @@ export default function ProgressScreen() {
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [])
+    }, [timeFrame])
   );
 
   const loadData = async () => {
@@ -75,35 +75,39 @@ export default function ProgressScreen() {
     }
   };
 
+  const getTodayString = (): string => {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+  };
+
   const getFilteredLogs = (logs: DailyLog[], timeFrame: TimeFrame): DailyLog[] => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
-    let cutoffDate: Date;
+    const todayString = getTodayString();
     
     switch (timeFrame) {
       case 'day':
         // Just today
-        cutoffDate = today;
-        break;
+        return logs.filter(log => log.date === todayString);
       case 'week':
-        // Last 7 days
-        cutoffDate = new Date(today);
-        cutoffDate.setDate(cutoffDate.getDate() - 7);
-        break;
+        // Last 7 days (including today)
+        const weekCutoff = new Date(today);
+        weekCutoff.setDate(weekCutoff.getDate() - 6); // 6 days ago + today = 7 days
+        return logs.filter(log => {
+          const logDate = new Date(log.date);
+          return logDate >= weekCutoff && logDate <= today;
+        });
       case 'month':
-        // Last 30 days
-        cutoffDate = new Date(today);
-        cutoffDate.setDate(cutoffDate.getDate() - 30);
-        break;
+        // Last 30 days (including today)
+        const monthCutoff = new Date(today);
+        monthCutoff.setDate(monthCutoff.getDate() - 29); // 29 days ago + today = 30 days
+        return logs.filter(log => {
+          const logDate = new Date(log.date);
+          return logDate >= monthCutoff && logDate <= today;
+        });
       default:
-        cutoffDate = new Date(0); // All time
+        return logs;
     }
-
-    return logs.filter(log => {
-      const logDate = new Date(log.date);
-      return logDate >= cutoffDate;
-    });
   };
 
   const calculateStats = (allLogs: DailyLog[], targets: DailyTargets, selectedTimeFrame: TimeFrame) => {
@@ -131,31 +135,63 @@ export default function ProgressScreen() {
       return;
     }
 
-    const proteinHits = filteredLogs.filter((log) => log.protein >= targets.protein).length;
-    const veggiesHits = filteredLogs.filter((log) => log.veggies >= targets.veggies).length;
-    const fruitHits = filteredLogs.filter((log) => log.fruit >= targets.fruit).length;
-    const wholeGrainsHits = filteredLogs.filter((log) => log.wholeGrains >= targets.wholeGrains).length;
-    const fatsHits = filteredLogs.filter((log) => log.fats >= targets.fats).length;
-    const nutsSeedsHits = filteredLogs.filter((log) => log.nutsSeeds >= targets.nutsSeeds).length;
-    const legumesHits = filteredLogs.filter((log) => log.legumes >= targets.legumes).length;
-    const waterHits = filteredLogs.filter((log) => log.water >= targets.water).length;
-    const dairyHits = filteredLogs.filter((log) => log.dairy >= targets.dairy).length;
-
-    const totalLogs = filteredLogs.length;
-
-    const newAdherence = {
-      protein: totalLogs > 0 ? Math.round((proteinHits / totalLogs) * 100) : 0,
-      veggies: totalLogs > 0 ? Math.round((veggiesHits / totalLogs) * 100) : 0,
-      fruit: totalLogs > 0 ? Math.round((fruitHits / totalLogs) * 100) : 0,
-      wholeGrains: totalLogs > 0 ? Math.round((wholeGrainsHits / totalLogs) * 100) : 0,
-      fats: totalLogs > 0 ? Math.round((fatsHits / totalLogs) * 100) : 0,
-      nutsSeeds: totalLogs > 0 ? Math.round((nutsSeedsHits / totalLogs) * 100) : 0,
-      legumes: totalLogs > 0 ? Math.round((legumesHits / totalLogs) * 100) : 0,
-      water: totalLogs > 0 ? Math.round((waterHits / totalLogs) * 100) : 0,
-      dairy: totalLogs > 0 ? Math.round((dairyHits / totalLogs) * 100) : 0,
+    // Calculate adherence based on actual portions consumed vs target
+    // Sum up all portions consumed across filtered days
+    const totalConsumed = {
+      protein: 0,
+      veggies: 0,
+      fruit: 0,
+      wholeGrains: 0,
+      fats: 0,
+      nutsSeeds: 0,
+      legumes: 0,
+      water: 0,
+      dairy: 0,
     };
 
+    filteredLogs.forEach(log => {
+      totalConsumed.protein += log.protein || 0;
+      totalConsumed.veggies += log.veggies || 0;
+      totalConsumed.fruit += log.fruit || 0;
+      totalConsumed.wholeGrains += log.wholeGrains || 0;
+      totalConsumed.fats += log.fats || 0;
+      totalConsumed.nutsSeeds += log.nutsSeeds || 0;
+      totalConsumed.legumes += log.legumes || 0;
+      totalConsumed.water += log.water || 0;
+      totalConsumed.dairy += log.dairy || 0;
+    });
+
+    // Calculate total target (target per day * number of days)
+    const numDays = filteredLogs.length;
+    const totalTarget = {
+      protein: targets.protein * numDays,
+      veggies: targets.veggies * numDays,
+      fruit: targets.fruit * numDays,
+      wholeGrains: targets.wholeGrains * numDays,
+      fats: targets.fats * numDays,
+      nutsSeeds: targets.nutsSeeds * numDays,
+      legumes: targets.legumes * numDays,
+      water: targets.water * numDays,
+      dairy: targets.dairy * numDays,
+    };
+
+    // Calculate percentage for each food group
+    const newAdherence = {
+      protein: totalTarget.protein > 0 ? Math.round((totalConsumed.protein / totalTarget.protein) * 100) : 0,
+      veggies: totalTarget.veggies > 0 ? Math.round((totalConsumed.veggies / totalTarget.veggies) * 100) : 0,
+      fruit: totalTarget.fruit > 0 ? Math.round((totalConsumed.fruit / totalTarget.fruit) * 100) : 0,
+      wholeGrains: totalTarget.wholeGrains > 0 ? Math.round((totalConsumed.wholeGrains / totalTarget.wholeGrains) * 100) : 0,
+      fats: totalTarget.fats > 0 ? Math.round((totalConsumed.fats / totalTarget.fats) * 100) : 0,
+      nutsSeeds: totalTarget.nutsSeeds > 0 ? Math.round((totalConsumed.nutsSeeds / totalTarget.nutsSeeds) * 100) : 0,
+      legumes: totalTarget.legumes > 0 ? Math.round((totalConsumed.legumes / totalTarget.legumes) * 100) : 0,
+      water: totalTarget.water > 0 ? Math.round((totalConsumed.water / totalTarget.water) * 100) : 0,
+      dairy: totalTarget.dairy > 0 ? Math.round((totalConsumed.dairy / totalTarget.dairy) * 100) : 0,
+    };
+
+    console.log('Total consumed:', totalConsumed);
+    console.log('Total target:', totalTarget);
     console.log('Adherence calculated:', newAdherence);
+    
     setAdherence(newAdherence);
 
     // Calculate streak from all logs (not filtered)
