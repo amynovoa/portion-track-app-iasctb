@@ -3,9 +3,9 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Image, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, commonStyles } from '@/styles/commonStyles';
-import { storage } from '@/utils/storage';
 import { DailyLog, DailyTargets } from '@/types';
 import { IconSymbol } from '@/components/IconSymbol';
+import { useAppContext } from '@/contexts/AppContext';
 
 interface AdherenceStats {
   protein: number;
@@ -22,8 +22,7 @@ interface AdherenceStats {
 type TimeFrame = 'day' | 'week' | 'month';
 
 export default function ProgressScreen() {
-  const [logs, setLogs] = useState<DailyLog[]>([]);
-  const [targets, setTargets] = useState<DailyTargets | null>(null);
+  const { allLogs, targets, refreshData } = useAppContext();
   const [timeFrame, setTimeFrame] = useState<TimeFrame>('week');
   const [stats, setStats] = useState({
     streak: 0,
@@ -43,19 +42,15 @@ export default function ProgressScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
-    }, [timeFrame])
+      console.log('=== Progress screen focused ===');
+      refreshData();
+    }, [refreshData])
   );
 
-  const loadData = async () => {
-    const logsData = await storage.getDailyLogs();
-    const targetsData = await storage.getDailyTargets();
-
-    setLogs(logsData);
-    setTargets(targetsData);
-
-    if (targetsData && logsData.length > 0) {
-      calculateStats(logsData, targetsData, timeFrame);
+  // Recalculate stats whenever logs, targets, or timeframe changes
+  React.useEffect(() => {
+    if (targets && allLogs.length > 0) {
+      calculateStats(allLogs, targets, timeFrame);
     } else {
       setStats({
         streak: 0,
@@ -73,7 +68,7 @@ export default function ProgressScreen() {
         dairy: 0,
       });
     }
-  };
+  }, [allLogs, targets, timeFrame]);
 
   const getTodayString = (): string => {
     const now = new Date();
@@ -214,9 +209,6 @@ export default function ProgressScreen() {
 
   const handleTimeFrameChange = (newTimeFrame: TimeFrame) => {
     setTimeFrame(newTimeFrame);
-    if (targets && logs.length > 0) {
-      calculateStats(logs, targets, newTimeFrame);
-    }
   };
 
   const renderAdherenceCard = (label: string, percentage: number) => (
@@ -259,7 +251,7 @@ export default function ProgressScreen() {
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {logs.length === 0 ? (
+        {allLogs.length === 0 ? (
           <View style={styles.emptyContainer}>
             <IconSymbol
               ios_icon_name="chart.bar.fill"

@@ -1,76 +1,23 @@
 
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, Image } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Platform, Image, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { colors, commonStyles } from '@/styles/commonStyles';
-import { storage } from '@/utils/storage';
-import { DailyLog, DailyTargets } from '@/types';
+import { colors } from '@/styles/commonStyles';
 import { formatDate } from '@/utils/dateUtils';
+import { useAppContext } from '@/contexts/AppContext';
 import { IconSymbol } from '@/components/IconSymbol';
 
 export default function HistoryScreen() {
-  const [logs, setLogs] = useState<DailyLog[]>([]);
-  const [targets, setTargets] = useState<DailyTargets | null>(null);
-  const [selectedLog, setSelectedLog] = useState<DailyLog | null>(null);
+  const { allLogs, targets, refreshData } = useAppContext();
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
-    }, [])
+      console.log('=== History screen focused ===');
+      refreshData();
+    }, [refreshData])
   );
 
-  const loadData = async () => {
-    const logsData = await storage.getDailyLogs();
-    const targetsData = await storage.getDailyTargets();
-    
-    const sortedLogs = logsData.sort((a, b) => b.date.localeCompare(a.date));
-    setLogs(sortedLogs);
-    setTargets(targetsData);
-  };
-
-  const renderLogDetail = () => {
-    if (!selectedLog || !targets) return null;
-
-    const fields: { key: keyof DailyLog; label: string }[] = [
-      { key: 'protein', label: 'Protein' },
-      { key: 'veggies', label: 'Veggies' },
-      { key: 'fruit', label: 'Fruit' },
-      { key: 'wholeGrains', label: 'Whole Grains' },
-      { key: 'fats', label: 'Healthy Fats' },
-      { key: 'nutsSeeds', label: 'Nuts & Seeds' },
-      { key: 'legumes', label: 'Legumes' },
-      { key: 'water', label: 'Water' },
-      { key: 'alcohol', label: 'Alcohol' },
-      { key: 'dairy', label: 'Dairy' },
-    ];
-
-    return (
-      <View style={styles.detailContainer}>
-        <View style={styles.detailHeader}>
-          <Text style={styles.detailTitle}>{formatDate(selectedLog.date)}</Text>
-          <TouchableOpacity onPress={() => setSelectedLog(null)}>
-            <IconSymbol
-              ios_icon_name="xmark.circle.fill"
-              android_material_icon_name="cancel"
-              size={28}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView style={styles.detailScroll} showsVerticalScrollIndicator={false}>
-          {fields.map((field) => (
-            <View key={field.key} style={styles.detailRow}>
-              <Text style={styles.detailLabel}>{field.label}</Text>
-              <Text style={styles.detailValue}>
-                {selectedLog[field.key]} / {targets[field.key]}
-              </Text>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
-    );
-  };
+  const sortedLogs = [...allLogs].sort((a, b) => b.date.localeCompare(a.date));
 
   return (
     <View style={styles.container}>
@@ -82,48 +29,74 @@ export default function HistoryScreen() {
             resizeMode="contain"
           />
         </View>
-        <Text style={styles.headerTitle}>History</Text>
       </View>
 
-      {selectedLog ? (
-        renderLogDetail()
-      ) : (
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-          {logs.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <IconSymbol
-                ios_icon_name="calendar"
-                android_material_icon_name="calendar_today"
-                size={64}
-                color={colors.textSecondary}
-              />
-              <Text style={styles.emptyText}>No history yet</Text>
-              <Text style={styles.emptySubtext}>Start tracking your portions today!</Text>
-            </View>
-          ) : (
-            logs.map((log, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.logCard}
-                onPress={() => setSelectedLog(log)}
-              >
-                <View style={styles.logContent}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        {sortedLogs.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <IconSymbol
+              ios_icon_name="clock.fill"
+              android_material_icon_name="history"
+              size={64}
+              color={colors.textSecondary}
+            />
+            <Text style={styles.emptyText}>No history yet</Text>
+            <Text style={styles.emptySubtext}>Start tracking to see your history!</Text>
+          </View>
+        ) : (
+          sortedLogs.map((log, index) => {
+            const totalPortions = log.protein + log.veggies + log.fruit + log.wholeGrains + log.fats + log.nutsSeeds + log.legumes + log.dairy + log.water;
+            
+            return (
+              <View key={index} style={styles.logCard}>
+                <View style={styles.logHeader}>
                   <Text style={styles.logDate}>{formatDate(log.date)}</Text>
-                  <Text style={styles.logSummary}>
-                    {log.protein + log.veggies + log.fruit + log.wholeGrains + log.fats + log.nutsSeeds + log.legumes + log.water + log.dairy} portions logged
-                  </Text>
+                  <Text style={styles.logTotal}>{totalPortions} portions</Text>
                 </View>
-                <IconSymbol
-                  ios_icon_name="list.bullet"
-                  android_material_icon_name="list"
-                  size={28}
-                  color={colors.primary}
-                />
-              </TouchableOpacity>
-            ))
-          )}
-        </ScrollView>
-      )}
+
+                <View style={styles.logGrid}>
+                  <View style={styles.logItem}>
+                    <Text style={styles.logLabel}>Protein</Text>
+                    <Text style={styles.logValue}>{log.protein}</Text>
+                  </View>
+                  <View style={styles.logItem}>
+                    <Text style={styles.logLabel}>Veggies</Text>
+                    <Text style={styles.logValue}>{log.veggies}</Text>
+                  </View>
+                  <View style={styles.logItem}>
+                    <Text style={styles.logLabel}>Fruit</Text>
+                    <Text style={styles.logValue}>{log.fruit}</Text>
+                  </View>
+                  <View style={styles.logItem}>
+                    <Text style={styles.logLabel}>Grains</Text>
+                    <Text style={styles.logValue}>{log.wholeGrains}</Text>
+                  </View>
+                  <View style={styles.logItem}>
+                    <Text style={styles.logLabel}>Fats</Text>
+                    <Text style={styles.logValue}>{log.fats}</Text>
+                  </View>
+                  <View style={styles.logItem}>
+                    <Text style={styles.logLabel}>Nuts</Text>
+                    <Text style={styles.logValue}>{log.nutsSeeds}</Text>
+                  </View>
+                  <View style={styles.logItem}>
+                    <Text style={styles.logLabel}>Legumes</Text>
+                    <Text style={styles.logValue}>{log.legumes}</Text>
+                  </View>
+                  <View style={styles.logItem}>
+                    <Text style={styles.logLabel}>Dairy</Text>
+                    <Text style={styles.logValue}>{log.dairy}</Text>
+                  </View>
+                  <View style={styles.logItem}>
+                    <Text style={styles.logLabel}>Water</Text>
+                    <Text style={styles.logValue}>{log.water}</Text>
+                  </View>
+                </View>
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -142,7 +115,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   logoContainer: {
-    marginBottom: 12,
     height: 160,
     width: 160,
     alignSelf: 'center',
@@ -150,11 +122,6 @@ const styles = StyleSheet.create({
   logo: {
     width: '100%',
     height: '100%',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
   },
   scrollView: {
     flex: 1,
@@ -180,62 +147,47 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   logCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     backgroundColor: colors.card,
     borderRadius: 16,
     padding: 20,
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  logContent: {
-    flex: 1,
+  logHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   logDate: {
     fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  logSummary: {
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  detailContainer: {
-    flex: 1,
-    padding: 24,
-  },
-  detailHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  detailTitle: {
-    fontSize: 24,
     fontWeight: '700',
     color: colors.text,
   },
-  detailScroll: {
-    flex: 1,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: colors.card,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-  },
-  detailLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  detailValue: {
-    fontSize: 16,
+  logTotal: {
+    fontSize: 14,
     fontWeight: '600',
     color: colors.primary,
+  },
+  logGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  logItem: {
+    width: '30%',
+    alignItems: 'center',
+  },
+  logLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginBottom: 4,
+  },
+  logValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
   },
 });

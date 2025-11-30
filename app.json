@@ -2,49 +2,43 @@
 {
   "expo": {
     "name": "Portion Track",
-    "slug": "Portion Track",
+    "slug": "portion-track",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/5cef0cc8-0b86-4da4-86ba-244665f65041.png",
+    "icon": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/a8b6ca2d-aad0-43bb-b5fe-a3c6bd7e7585.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.portiontrack.app",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+      "icon": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/5cef0cc8-0b86-4da4-86ba-244665f65041.png",
+        "foregroundImage": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png",
         "backgroundColor": "#FFFFFF",
-        "monochromeImage": "./assets/images/5cef0cc8-0b86-4da4-86ba-244665f65041.png"
+        "monochromeImage": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.portiontrack.app"
+      "package": "com.portiontrack.app",
+      "icon": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png"
     },
     "web": {
-      "favicon": "./assets/images/5cef0cc8-0b86-4da4-86ba-244665f65041.png",
+      "favicon": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-font",
-      "expo-router",
-      "expo-web-browser"
+      "expo-router"
     ],
-    "scheme": "portiontrack",
+    "scheme": "portion-track",
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "router": {}
     }
-  },
-  "scheme": "Portion Track"
+  }
 }

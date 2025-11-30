@@ -1,13 +1,12 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Platform, TouchableOpacity, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors, commonStyles } from '@/styles/commonStyles';
 import HealthyOptionsSheet from '@/components/HealthyOptionsSheet';
-import { storage } from '@/utils/storage';
-import { DailyLog, DailyTargets, FoodGroup, User } from '@/types';
-import { getTodayDate, shouldResetLog } from '@/utils/dateUtils';
+import { FoodGroup } from '@/types';
+import { useAppContext } from '@/contexts/AppContext';
 
 const foodGroups: { key: FoodGroup; label: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }[] = [
   { key: 'protein', label: 'Protein', icon: 'food-drumstick' },
@@ -23,149 +22,25 @@ const foodGroups: { key: FoodGroup; label: string; icon: keyof typeof MaterialCo
 ];
 
 export default function TodayScreen() {
-  const [user, setUser] = useState<User | null>(null);
-  const [targets, setTargets] = useState<DailyTargets | null>(null);
-  const [log, setLog] = useState<DailyLog | null>(null);
+  const { user, targets, todayLog, isLoading, updateTodayLog, refreshData } = useAppContext();
   const [selectedGroup, setSelectedGroup] = useState<FoodGroup | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const loadData = useCallback(async () => {
-    console.log('=== Loading data for Today screen ===');
-    setIsLoading(true);
-    
-    try {
-      const userData = await storage.getUser();
-      const targetsData = await storage.getDailyTargets();
-      const logs = await storage.getDailyLogs();
-
-      console.log('User data loaded:', userData);
-      console.log('Targets data loaded:', targetsData);
-      console.log('All logs loaded:', logs);
-
-      setUser(userData);
-      setTargets(targetsData);
-
-      const today = getTodayDate();
-      console.log('Today date:', today);
-      
-      let todayLog = logs.find((l) => l.date === today);
-      console.log('Found today log:', todayLog);
-
-      if (!todayLog) {
-        console.log('Creating new log for today');
-        todayLog = {
-          date: today,
-          protein: 0,
-          veggies: 0,
-          fruit: 0,
-          wholeGrains: 0,
-          fats: 0,
-          nutsSeeds: 0,
-          legumes: 0,
-          water: 0,
-          alcohol: 0,
-          dairy: 0,
-        };
-        const updatedLogs = [...logs, todayLog];
-        await storage.setDailyLogs(updatedLogs);
-        console.log('New log created and saved');
-      } else if (userData && shouldResetLog(todayLog.date, userData.resetTime)) {
-        console.log('Resetting log for new day');
-        todayLog = {
-          date: today,
-          protein: 0,
-          veggies: 0,
-          fruit: 0,
-          wholeGrains: 0,
-          fats: 0,
-          nutsSeeds: 0,
-          legumes: 0,
-          water: 0,
-          alcohol: 0,
-          dairy: 0,
-        };
-        const updatedLogs = logs.filter((l) => l.date !== today);
-        await storage.setDailyLogs([...updatedLogs, todayLog]);
-        console.log('Log reset and saved');
-      }
-
-      console.log('Setting log state to:', todayLog);
-      setLog(todayLog);
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
       console.log('=== Today screen focused ===');
-      loadData();
-    }, [loadData])
+      refreshData();
+    }, [refreshData])
   );
 
-  const updateLog = useCallback(async (group: FoodGroup, value: number) => {
-    if (!log || !targets) {
-      console.log('Cannot update log: log or targets is null');
-      return;
-    }
-
-    const today = getTodayDate();
-    console.log(`=== Updating ${group} to ${value} for date ${today} ===`);
-    
-    const updatedLog = { ...log, [group]: value };
-    console.log('Updated log object:', updatedLog);
-    
-    // Update state immediately for responsive UI
-    setLog(updatedLog);
-
-    // Save to storage
-    try {
-      const logs = await storage.getDailyLogs();
-      console.log('Current logs in storage:', logs);
-      
-      // Find and update today's log, or add it if it doesn't exist
-      const logIndex = logs.findIndex((l) => l.date === today);
-      
-      let updatedLogs: DailyLog[];
-      if (logIndex >= 0) {
-        console.log(`Updating existing log at index ${logIndex}`);
-        updatedLogs = [...logs];
-        updatedLogs[logIndex] = updatedLog;
-      } else {
-        console.log('Adding new log to array');
-        updatedLogs = [...logs, updatedLog];
-      }
-      
-      console.log('Saving updated logs:', updatedLogs);
-      await storage.setDailyLogs(updatedLogs);
-      
-      // Verify the save
-      const verifyLogs = await storage.getDailyLogs();
-      const verifyTodayLog = verifyLogs.find(l => l.date === today);
-      console.log('Verification - Today log after save:', verifyTodayLog);
-      
-      if (verifyTodayLog && verifyTodayLog[group] === value) {
-        console.log('✓ Save verified successfully');
-      } else {
-        console.error('✗ Save verification failed!');
-      }
-    } catch (error) {
-      console.error('Error saving log:', error);
-      Alert.alert('Error', 'Failed to save your progress. Please try again.');
-    }
-  }, [log, targets]);
-
-  const handleIncrement = useCallback((group: FoodGroup) => {
-    if (!log || !targets) {
-      console.log('Cannot increment: log or targets is null');
+  const handleIncrement = useCallback(async (group: FoodGroup) => {
+    if (!todayLog || !targets) {
+      console.log('Cannot increment: todayLog or targets is null');
       return;
     }
 
     // Hard cap alcohol at 2 portions per day
-    if (group === 'alcohol' && log.alcohol >= 2) {
+    if (group === 'alcohol' && todayLog.alcohol >= 2) {
       Alert.alert(
         'Daily Limit Reached',
         'Daily alcohol limit reached (2/2). Adjust in Settings if needed.',
@@ -174,30 +49,42 @@ export default function TodayScreen() {
       return;
     }
 
-    const newValue = log[group] + 1;
-    console.log(`Incrementing ${group} from ${log[group]} to ${newValue}`);
-    updateLog(group, newValue);
-  }, [log, targets, updateLog]);
+    const newValue = todayLog[group] + 1;
+    console.log(`Incrementing ${group} from ${todayLog[group]} to ${newValue}`);
+    
+    try {
+      await updateTodayLog(group, newValue);
+    } catch (error) {
+      console.error('Error incrementing:', error);
+      Alert.alert('Error', 'Failed to save your progress. Please try again.');
+    }
+  }, [todayLog, targets, updateTodayLog]);
 
-  const handleDecrement = useCallback((group: FoodGroup) => {
-    if (!log) {
-      console.log('Cannot decrement: log is null');
+  const handleDecrement = useCallback(async (group: FoodGroup) => {
+    if (!todayLog) {
+      console.log('Cannot decrement: todayLog is null');
       return;
     }
     
-    if (log[group] > 0) {
-      const newValue = log[group] - 1;
-      console.log(`Decrementing ${group} from ${log[group]} to ${newValue}`);
-      updateLog(group, newValue);
+    if (todayLog[group] > 0) {
+      const newValue = todayLog[group] - 1;
+      console.log(`Decrementing ${group} from ${todayLog[group]} to ${newValue}`);
+      
+      try {
+        await updateTodayLog(group, newValue);
+      } catch (error) {
+        console.error('Error decrementing:', error);
+        Alert.alert('Error', 'Failed to save your progress. Please try again.');
+      }
     }
-  }, [log, updateLog]);
+  }, [todayLog, updateTodayLog]);
 
   const handleInfo = useCallback((group: FoodGroup) => {
     setSelectedGroup(group);
     setSheetVisible(true);
   }, []);
 
-  if (isLoading || !user || !targets || !log) {
+  if (isLoading || !user || !targets || !todayLog) {
     return (
       <View style={[commonStyles.container, styles.loadingContainer]}>
         <Text style={commonStyles.text}>Loading...</Text>
@@ -225,7 +112,7 @@ export default function TodayScreen() {
         showsVerticalScrollIndicator={false}
       >
         {foodGroups.map((group, index) => {
-          const current = log[group.key];
+          const current = todayLog[group.key];
           // For alcohol, always show max of 2 regardless of target setting
           const target = group.key === 'alcohol' ? 2 : targets[group.key];
           const isOverTarget = current > target;
