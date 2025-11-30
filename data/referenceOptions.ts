@@ -67,7 +67,7 @@ export const referenceOptions: ReferenceOptions = {
       '1 medium piece of fruit',
       '1 cup berries',
       '1 cup chopped fruit',
-      '1/2 cup dried fruit',
+      '2 tbsp dried fruit',
       '1/2 grapefruit',
     ],
   },
