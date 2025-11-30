@@ -137,7 +137,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       
       console.log('AppContext: Saving updated logs');
       await storage.setDailyLogs(updatedLogs);
-      setAllLogs(updatedLogs);
+      
+      // Create a new array reference to ensure React detects the change
+      setAllLogs([...updatedLogs]);
       
       // Verify the save
       const verifyLogs = await storage.getDailyLogs();
