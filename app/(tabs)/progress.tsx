@@ -1,7 +1,6 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Image, TouchableOpacity } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { colors, commonStyles } from '@/styles/commonStyles';
 import { DailyLog, DailyTargets } from '@/types';
 import { IconSymbol } from '@/components/IconSymbol';
@@ -22,15 +21,8 @@ interface AdherenceStats {
 type TimeFrame = 'day' | 'week' | 'month';
 
 export default function ProgressScreen() {
-  const { allLogs, targets, refreshData } = useAppContext();
-  const [timeFrame, setTimeFrame] = useState<TimeFrame>('week');
-
-  useFocusEffect(
-    useCallback(() => {
-      console.log('=== Progress screen focused ===');
-      refreshData();
-    }, [refreshData])
-  );
+  const { allLogs, targets } = useAppContext();
+  const [timeFrame, setTimeFrame] = useState<TimeFrame>('day');
 
   const getTodayString = (): string => {
     const now = new Date();

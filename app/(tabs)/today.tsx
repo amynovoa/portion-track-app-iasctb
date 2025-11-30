@@ -1,7 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Platform, TouchableOpacity, Image } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors, commonStyles } from '@/styles/commonStyles';
 import HealthyOptionsSheet from '@/components/HealthyOptionsSheet';
@@ -22,16 +21,9 @@ const foodGroups: { key: FoodGroup; label: string; icon: keyof typeof MaterialCo
 ];
 
 export default function TodayScreen() {
-  const { user, targets, todayLog, isLoading, updateTodayLog, refreshData } = useAppContext();
+  const { user, targets, todayLog, isLoading, updateTodayLog } = useAppContext();
   const [selectedGroup, setSelectedGroup] = useState<FoodGroup | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
-
-  useFocusEffect(
-    useCallback(() => {
-      console.log('=== Today screen focused ===');
-      refreshData();
-    }, [refreshData])
-  );
 
   const handleIncrement = useCallback(async (group: FoodGroup) => {
     if (!todayLog || !targets) {
