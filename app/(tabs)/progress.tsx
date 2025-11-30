@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Platform, Image, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, commonStyles } from '@/styles/commonStyles';
@@ -24,21 +24,6 @@ type TimeFrame = 'day' | 'week' | 'month';
 export default function ProgressScreen() {
   const { allLogs, targets, refreshData } = useAppContext();
   const [timeFrame, setTimeFrame] = useState<TimeFrame>('week');
-  const [stats, setStats] = useState({
-    streak: 0,
-    totalDays: 0,
-  });
-  const [adherence, setAdherence] = useState<AdherenceStats>({
-    protein: 0,
-    veggies: 0,
-    fruit: 0,
-    wholeGrains: 0,
-    fats: 0,
-    nutsSeeds: 0,
-    legumes: 0,
-    water: 0,
-    dairy: 0,
-  });
 
   useFocusEffect(
     useCallback(() => {
@@ -46,34 +31,6 @@ export default function ProgressScreen() {
       refreshData();
     }, [refreshData])
   );
-
-  // Recalculate stats whenever logs, targets, or timeframe changes
-  React.useEffect(() => {
-    console.log('=== Progress useEffect triggered ===');
-    console.log('allLogs length:', allLogs.length);
-    console.log('targets:', targets);
-    console.log('timeFrame:', timeFrame);
-    
-    if (targets && allLogs.length > 0) {
-      calculateStats(allLogs, targets, timeFrame);
-    } else {
-      setStats({
-        streak: 0,
-        totalDays: 0,
-      });
-      setAdherence({
-        protein: 0,
-        veggies: 0,
-        fruit: 0,
-        wholeGrains: 0,
-        fats: 0,
-        nutsSeeds: 0,
-        legumes: 0,
-        water: 0,
-        dairy: 0,
-      });
-    }
-  }, [allLogs.length, JSON.stringify(allLogs), targets, timeFrame]);
 
   const getTodayString = (): string => {
     const now = new Date();
@@ -92,19 +49,19 @@ export default function ProgressScreen() {
     return `${year}-${month}-${day}`;
   };
 
-  const getFilteredLogs = (logs: DailyLog[], timeFrame: TimeFrame): DailyLog[] => {
+  const getFilteredLogs = useCallback((logs: DailyLog[], selectedTimeFrame: TimeFrame): DailyLog[] => {
     const todayString = getTodayString();
     
     console.log('=== Filtering logs ===');
     console.log('Today:', todayString);
-    console.log('TimeFrame:', timeFrame);
+    console.log('TimeFrame:', selectedTimeFrame);
     console.log('Total logs:', logs.length);
     
-    switch (timeFrame) {
+    switch (selectedTimeFrame) {
       case 'day':
         // Just today
         const dayLogs = logs.filter(log => log.date === todayString);
-        console.log('Day logs found:', dayLogs.length);
+        console.log('Day logs found:', dayLogs.length, dayLogs);
         return dayLogs;
         
       case 'week':
@@ -114,7 +71,7 @@ export default function ProgressScreen() {
         const weekLogs = logs.filter(log => {
           const isInRange = log.date >= weekCutoff && log.date <= todayString;
           if (isInRange) {
-            console.log('Week log included:', log.date);
+            console.log('Week log included:', log.date, log);
           }
           return isInRange;
         });
@@ -128,7 +85,7 @@ export default function ProgressScreen() {
         const monthLogs = logs.filter(log => {
           const isInRange = log.date >= monthCutoff && log.date <= todayString;
           if (isInRange) {
-            console.log('Month log included:', log.date);
+            console.log('Month log included:', log.date, log);
           }
           return isInRange;
         });
@@ -138,20 +95,18 @@ export default function ProgressScreen() {
       default:
         return logs;
     }
-  };
+  }, []);
 
-  const calculateStats = (allLogs: DailyLog[], targets: DailyTargets, selectedTimeFrame: TimeFrame) => {
-    console.log('=== Calculating stats ===');
-    console.log('Selected timeframe:', selectedTimeFrame);
-    
-    // Filter logs based on timeframe
-    const filteredLogs = getFilteredLogs(allLogs, selectedTimeFrame);
-    
-    console.log(`Calculating stats for ${selectedTimeFrame}: ${filteredLogs.length} logs`);
+  // Calculate adherence using useMemo to ensure it recalculates when dependencies change
+  const adherence = useMemo(() => {
+    console.log('=== Calculating adherence (useMemo) ===');
+    console.log('allLogs:', allLogs.length, 'logs');
+    console.log('targets:', targets);
+    console.log('timeFrame:', timeFrame);
 
-    if (filteredLogs.length === 0) {
-      console.log('No logs found for timeframe, setting adherence to 0');
-      setAdherence({
+    if (!targets || allLogs.length === 0) {
+      console.log('No targets or logs, returning 0 adherence');
+      return {
         protein: 0,
         veggies: 0,
         fruit: 0,
@@ -161,16 +116,28 @@ export default function ProgressScreen() {
         legumes: 0,
         water: 0,
         dairy: 0,
-      });
-      setStats({
-        streak: 0,
-        totalDays: 0,
-      });
-      return;
+      };
     }
 
-    // Calculate adherence based on actual portions consumed vs target
-    // Sum up all portions consumed across filtered days
+    const filteredLogs = getFilteredLogs(allLogs, timeFrame);
+    console.log(`Filtered logs for ${timeFrame}:`, filteredLogs.length);
+
+    if (filteredLogs.length === 0) {
+      console.log('No filtered logs, returning 0 adherence');
+      return {
+        protein: 0,
+        veggies: 0,
+        fruit: 0,
+        wholeGrains: 0,
+        fats: 0,
+        nutsSeeds: 0,
+        legumes: 0,
+        water: 0,
+        dairy: 0,
+      };
+    }
+
+    // Calculate total consumed across all filtered days
     const totalConsumed = {
       protein: 0,
       veggies: 0,
@@ -210,7 +177,7 @@ export default function ProgressScreen() {
     };
 
     // Calculate percentage for each food group
-    const newAdherence = {
+    const calculatedAdherence = {
       protein: totalTarget.protein > 0 ? Math.round((totalConsumed.protein / totalTarget.protein) * 100) : 0,
       veggies: totalTarget.veggies > 0 ? Math.round((totalConsumed.veggies / totalTarget.veggies) * 100) : 0,
       fruit: totalTarget.fruit > 0 ? Math.round((totalConsumed.fruit / totalTarget.fruit) * 100) : 0,
@@ -225,9 +192,21 @@ export default function ProgressScreen() {
     console.log('Number of days:', numDays);
     console.log('Total consumed:', totalConsumed);
     console.log('Total target:', totalTarget);
-    console.log('Adherence calculated:', newAdherence);
+    console.log('Adherence calculated:', calculatedAdherence);
+
+    return calculatedAdherence;
+  }, [allLogs, targets, timeFrame, getFilteredLogs]);
+
+  // Calculate stats using useMemo
+  const stats = useMemo(() => {
+    console.log('=== Calculating stats (useMemo) ===');
     
-    setAdherence(newAdherence);
+    if (allLogs.length === 0) {
+      return {
+        streak: 0,
+        totalDays: 0,
+      };
+    }
 
     // Calculate streak from all logs (not filtered)
     const sortedLogs = [...allLogs].sort((a, b) => b.date.localeCompare(a.date));
@@ -241,11 +220,14 @@ export default function ProgressScreen() {
       }
     }
 
-    setStats({
+    console.log('Streak calculated:', streak);
+    console.log('Total days:', allLogs.length);
+
+    return {
       streak: streak,
       totalDays: allLogs.length,
-    });
-  };
+    };
+  }, [allLogs]);
 
   const handleTimeFrameChange = (newTimeFrame: TimeFrame) => {
     console.log('Changing timeframe to:', newTimeFrame);
