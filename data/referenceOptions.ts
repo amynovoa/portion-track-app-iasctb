@@ -7,6 +7,7 @@ export const referenceOptions: ReferenceOptions = {
     tip: 'Aim for lean proteins to support muscle health and satiety.',
     options: [
       { name: 'Chicken breast', diet: 'omnivore' },
+      { name: 'Fish or shrimp', diet: 'omnivore' },
       { name: 'Salmon', diet: 'omnivore' },
       { name: 'Protein Powder', diet: 'omnivore' },
       { name: 'Lean beef', diet: 'omnivore' },
