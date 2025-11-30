@@ -1,10 +1,11 @@
+
 {
   "expo": {
     "name": "Portion Track",
     "slug": "Portion Track",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png",
+    "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/a8b6ca2d-aad0-43bb-b5fe-a3c6bd7e7585.png",
@@ -17,19 +18,19 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.portiontrack.app",
-      "icon": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png"
+      "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png",
+        "foregroundImage": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
         "backgroundColor": "#FFFFFF",
-        "monochromeImage": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png"
+        "monochromeImage": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png"
       },
       "package": "com.portiontrack.app",
-      "icon": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png"
+      "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png"
     },
     "web": {
-      "favicon": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png",
+      "favicon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
       "bundler": "metro"
     },
     "plugins": [
