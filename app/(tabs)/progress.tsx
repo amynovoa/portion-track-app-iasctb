@@ -318,7 +318,10 @@ export default function ProgressScreen() {
                 style={[styles.timeFrameButton, timeFrame === 'day' && styles.timeFrameButtonActive]}
                 onPress={() => handleTimeFrameChange('day')}
               >
-                <Text style={[styles.timeFrameButtonText, timeFrame === 'day' && styles.timeFrameButtonTextActive]}>
+                <Text 
+                  style={[styles.timeFrameButtonText, timeFrame === 'day' && styles.timeFrameButtonTextActive]}
+                  numberOfLines={1}
+                >
                   Day
                 </Text>
               </TouchableOpacity>
@@ -327,7 +330,10 @@ export default function ProgressScreen() {
                 style={[styles.timeFrameButton, timeFrame === 'week' && styles.timeFrameButtonActive]}
                 onPress={() => handleTimeFrameChange('week')}
               >
-                <Text style={[styles.timeFrameButtonText, timeFrame === 'week' && styles.timeFrameButtonTextActive]}>
+                <Text 
+                  style={[styles.timeFrameButtonText, timeFrame === 'week' && styles.timeFrameButtonTextActive]}
+                  numberOfLines={1}
+                >
                   Week
                 </Text>
               </TouchableOpacity>
@@ -336,7 +342,10 @@ export default function ProgressScreen() {
                 style={[styles.timeFrameButton, timeFrame === 'month' && styles.timeFrameButtonActive]}
                 onPress={() => handleTimeFrameChange('month')}
               >
-                <Text style={[styles.timeFrameButtonText, timeFrame === 'month' && styles.timeFrameButtonTextActive]}>
+                <Text 
+                  style={[styles.timeFrameButtonText, timeFrame === 'month' && styles.timeFrameButtonTextActive]}
+                  numberOfLines={1}
+                >
                   Month
                 </Text>
               </TouchableOpacity>
@@ -456,7 +465,7 @@ const styles = StyleSheet.create({
   timeFrameButton: {
     flex: 1,
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -465,7 +474,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   timeFrameButtonText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
     color: colors.textSecondary,
   },
