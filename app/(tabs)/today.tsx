@@ -2,6 +2,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Platform, TouchableOpacity, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, commonStyles } from '@/styles/commonStyles';
 import HealthyOptionsSheet from '@/components/HealthyOptionsSheet';
 import { FoodGroup } from '@/types';
@@ -24,6 +25,14 @@ export default function TodayScreen() {
   const { user, targets, todayLog, isLoading, updateTodayLog } = useAppContext();
   const [selectedGroup, setSelectedGroup] = useState<FoodGroup | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
+
+  // Log when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      console.log('=== TodayScreen focused ===');
+      console.log('todayLog:', todayLog);
+    }, [todayLog])
+  );
 
   const handleIncrement = useCallback(async (group: FoodGroup) => {
     if (!todayLog || !targets) {

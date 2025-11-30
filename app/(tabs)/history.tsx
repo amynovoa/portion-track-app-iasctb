@@ -1,21 +1,16 @@
 
-import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Image, TouchableOpacity } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Platform, Image } from 'react-native';
 import { colors } from '@/styles/commonStyles';
 import { formatDate } from '@/utils/dateUtils';
 import { useAppContext } from '@/contexts/AppContext';
 import { IconSymbol } from '@/components/IconSymbol';
 
 export default function HistoryScreen() {
-  const { allLogs, targets, refreshData } = useAppContext();
+  const { allLogs, targets } = useAppContext();
 
-  useFocusEffect(
-    useCallback(() => {
-      console.log('=== History screen focused ===');
-      refreshData();
-    }, [refreshData])
-  );
+  console.log('=== HistoryScreen render ===');
+  console.log('allLogs length:', allLogs.length);
 
   const sortedLogs = [...allLogs].sort((a, b) => b.date.localeCompare(a.date));
 
