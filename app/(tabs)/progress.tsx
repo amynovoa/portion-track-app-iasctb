@@ -49,6 +49,11 @@ export default function ProgressScreen() {
 
   // Recalculate stats whenever logs, targets, or timeframe changes
   React.useEffect(() => {
+    console.log('=== Progress useEffect triggered ===');
+    console.log('allLogs length:', allLogs.length);
+    console.log('targets:', targets);
+    console.log('timeFrame:', timeFrame);
+    
     if (targets && allLogs.length > 0) {
       calculateStats(allLogs, targets, timeFrame);
     } else {
@@ -68,50 +73,84 @@ export default function ProgressScreen() {
         dairy: 0,
       });
     }
-  }, [allLogs, targets, timeFrame]);
+  }, [allLogs.length, JSON.stringify(allLogs), targets, timeFrame]);
 
   const getTodayString = (): string => {
     const now = new Date();
-    return now.toISOString().split('T')[0];
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const getDateDaysAgo = (daysAgo: number): string => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const getFilteredLogs = (logs: DailyLog[], timeFrame: TimeFrame): DailyLog[] => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayString = getTodayString();
+    
+    console.log('=== Filtering logs ===');
+    console.log('Today:', todayString);
+    console.log('TimeFrame:', timeFrame);
+    console.log('Total logs:', logs.length);
     
     switch (timeFrame) {
       case 'day':
         // Just today
-        return logs.filter(log => log.date === todayString);
+        const dayLogs = logs.filter(log => log.date === todayString);
+        console.log('Day logs found:', dayLogs.length);
+        return dayLogs;
+        
       case 'week':
         // Last 7 days (including today)
-        const weekCutoff = new Date(today);
-        weekCutoff.setDate(weekCutoff.getDate() - 6); // 6 days ago + today = 7 days
-        return logs.filter(log => {
-          const logDate = new Date(log.date);
-          return logDate >= weekCutoff && logDate <= today;
+        const weekCutoff = getDateDaysAgo(6); // 6 days ago + today = 7 days
+        console.log('Week cutoff:', weekCutoff);
+        const weekLogs = logs.filter(log => {
+          const isInRange = log.date >= weekCutoff && log.date <= todayString;
+          if (isInRange) {
+            console.log('Week log included:', log.date);
+          }
+          return isInRange;
         });
+        console.log('Week logs found:', weekLogs.length);
+        return weekLogs;
+        
       case 'month':
         // Last 30 days (including today)
-        const monthCutoff = new Date(today);
-        monthCutoff.setDate(monthCutoff.getDate() - 29); // 29 days ago + today = 30 days
-        return logs.filter(log => {
-          const logDate = new Date(log.date);
-          return logDate >= monthCutoff && logDate <= today;
+        const monthCutoff = getDateDaysAgo(29); // 29 days ago + today = 30 days
+        console.log('Month cutoff:', monthCutoff);
+        const monthLogs = logs.filter(log => {
+          const isInRange = log.date >= monthCutoff && log.date <= todayString;
+          if (isInRange) {
+            console.log('Month log included:', log.date);
+          }
+          return isInRange;
         });
+        console.log('Month logs found:', monthLogs.length);
+        return monthLogs;
+        
       default:
         return logs;
     }
   };
 
   const calculateStats = (allLogs: DailyLog[], targets: DailyTargets, selectedTimeFrame: TimeFrame) => {
+    console.log('=== Calculating stats ===');
+    console.log('Selected timeframe:', selectedTimeFrame);
+    
     // Filter logs based on timeframe
     const filteredLogs = getFilteredLogs(allLogs, selectedTimeFrame);
     
     console.log(`Calculating stats for ${selectedTimeFrame}: ${filteredLogs.length} logs`);
 
     if (filteredLogs.length === 0) {
+      console.log('No logs found for timeframe, setting adherence to 0');
       setAdherence({
         protein: 0,
         veggies: 0,
@@ -183,6 +222,7 @@ export default function ProgressScreen() {
       dairy: totalTarget.dairy > 0 ? Math.round((totalConsumed.dairy / totalTarget.dairy) * 100) : 0,
     };
 
+    console.log('Number of days:', numDays);
     console.log('Total consumed:', totalConsumed);
     console.log('Total target:', totalTarget);
     console.log('Adherence calculated:', newAdherence);
@@ -208,6 +248,7 @@ export default function ProgressScreen() {
   };
 
   const handleTimeFrameChange = (newTimeFrame: TimeFrame) => {
+    console.log('Changing timeframe to:', newTimeFrame);
     setTimeFrame(newTimeFrame);
   };
 
