@@ -309,7 +309,7 @@ export default function ProgressScreen() {
             </View>
 
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Target Adherence</Text>
+              <Text style={styles.sectionTitle}>Target Progress</Text>
               <Text style={styles.timeFrameLabel}>{getTimeFrameLabel()}</Text>
             </View>
 
