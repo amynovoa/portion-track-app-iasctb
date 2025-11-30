@@ -39,10 +39,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       console.log('AppContext: User loaded:', userData);
       console.log('AppContext: Targets loaded:', targetsData);
       console.log('AppContext: Logs loaded:', logsData.length, 'logs');
+      console.log('AppContext: Logs data:', JSON.stringify(logsData, null, 2));
 
       setUserState(userData);
       setTargetsState(targetsData);
-      setAllLogs(logsData);
+      
+      // Create a new array reference to ensure React detects the change
+      setAllLogs([...logsData]);
 
       const today = getTodayDate();
       console.log('AppContext: Today date:', today);
@@ -67,7 +70,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         };
         const updatedLogs = [...logsData, todayLogData];
         await storage.setDailyLogs(updatedLogs);
-        setAllLogs(updatedLogs);
+        setAllLogs([...updatedLogs]);
       } else if (userData && shouldResetLog(todayLogData.date, userData.resetTime)) {
         console.log('AppContext: Resetting log for new day');
         todayLogData = {
@@ -86,7 +89,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const updatedLogs = logsData.filter((l) => l.date !== today);
         updatedLogs.push(todayLogData);
         await storage.setDailyLogs(updatedLogs);
-        setAllLogs(updatedLogs);
+        setAllLogs([...updatedLogs]);
       }
 
       console.log('AppContext: Setting today log to:', todayLogData);
@@ -138,8 +141,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       console.log('AppContext: Saving updated logs');
       await storage.setDailyLogs(updatedLogs);
       
-      // Create a new array reference to ensure React detects the change
-      setAllLogs([...updatedLogs]);
+      // CRITICAL: Create a completely new array reference to ensure React detects the change
+      // This is essential for useMemo dependencies to work correctly
+      const newLogsArray = updatedLogs.map(log => ({ ...log }));
+      setAllLogs(newLogsArray);
+      
+      console.log('AppContext: Updated allLogs state with new reference');
       
       // Verify the save
       const verifyLogs = await storage.getDailyLogs();

@@ -1,8 +1,7 @@
-
 {
   "expo": {
     "name": "Portion Track",
-    "slug": "portion-track",
+    "slug": "Portion Track",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/c120b509-3f86-4f37-80ee-1220bafc3458.png",
@@ -40,5 +39,6 @@
     "experiments": {
       "typedRoutes": true
     }
-  }
+  },
+  "scheme": "Portion Track"
 }

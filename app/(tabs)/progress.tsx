@@ -49,58 +49,11 @@ export default function ProgressScreen() {
     return `${year}-${month}-${day}`;
   };
 
-  const getFilteredLogs = useCallback((logs: DailyLog[], selectedTimeFrame: TimeFrame): DailyLog[] => {
-    const todayString = getTodayString();
-    
-    console.log('=== Filtering logs ===');
-    console.log('Today:', todayString);
-    console.log('TimeFrame:', selectedTimeFrame);
-    console.log('Total logs:', logs.length);
-    
-    switch (selectedTimeFrame) {
-      case 'day':
-        // Just today
-        const dayLogs = logs.filter(log => log.date === todayString);
-        console.log('Day logs found:', dayLogs.length, dayLogs);
-        return dayLogs;
-        
-      case 'week':
-        // Last 7 days (including today)
-        const weekCutoff = getDateDaysAgo(6); // 6 days ago + today = 7 days
-        console.log('Week cutoff:', weekCutoff);
-        const weekLogs = logs.filter(log => {
-          const isInRange = log.date >= weekCutoff && log.date <= todayString;
-          if (isInRange) {
-            console.log('Week log included:', log.date, log);
-          }
-          return isInRange;
-        });
-        console.log('Week logs found:', weekLogs.length);
-        return weekLogs;
-        
-      case 'month':
-        // Last 30 days (including today)
-        const monthCutoff = getDateDaysAgo(29); // 29 days ago + today = 30 days
-        console.log('Month cutoff:', monthCutoff);
-        const monthLogs = logs.filter(log => {
-          const isInRange = log.date >= monthCutoff && log.date <= todayString;
-          if (isInRange) {
-            console.log('Month log included:', log.date, log);
-          }
-          return isInRange;
-        });
-        console.log('Month logs found:', monthLogs.length);
-        return monthLogs;
-        
-      default:
-        return logs;
-    }
-  }, []);
-
   // Calculate adherence using useMemo to ensure it recalculates when dependencies change
   const adherence = useMemo(() => {
     console.log('=== Calculating adherence (useMemo) ===');
     console.log('allLogs:', allLogs.length, 'logs');
+    console.log('allLogs data:', JSON.stringify(allLogs, null, 2));
     console.log('targets:', targets);
     console.log('timeFrame:', timeFrame);
 
@@ -119,8 +72,49 @@ export default function ProgressScreen() {
       };
     }
 
-    const filteredLogs = getFilteredLogs(allLogs, timeFrame);
-    console.log(`Filtered logs for ${timeFrame}:`, filteredLogs.length);
+    const todayString = getTodayString();
+    console.log('Today:', todayString);
+
+    let filteredLogs: DailyLog[] = [];
+
+    switch (timeFrame) {
+      case 'day':
+        // Just today
+        filteredLogs = allLogs.filter(log => log.date === todayString);
+        console.log('Day logs found:', filteredLogs.length, filteredLogs);
+        break;
+        
+      case 'week':
+        // Last 7 days (including today)
+        const weekCutoff = getDateDaysAgo(6); // 6 days ago + today = 7 days
+        console.log('Week cutoff:', weekCutoff);
+        filteredLogs = allLogs.filter(log => {
+          const isInRange = log.date >= weekCutoff && log.date <= todayString;
+          if (isInRange) {
+            console.log('Week log included:', log.date, log);
+          }
+          return isInRange;
+        });
+        console.log('Week logs found:', filteredLogs.length);
+        break;
+        
+      case 'month':
+        // Last 30 days (including today)
+        const monthCutoff = getDateDaysAgo(29); // 29 days ago + today = 30 days
+        console.log('Month cutoff:', monthCutoff);
+        filteredLogs = allLogs.filter(log => {
+          const isInRange = log.date >= monthCutoff && log.date <= todayString;
+          if (isInRange) {
+            console.log('Month log included:', log.date, log);
+          }
+          return isInRange;
+        });
+        console.log('Month logs found:', filteredLogs.length);
+        break;
+        
+      default:
+        filteredLogs = allLogs;
+    }
 
     if (filteredLogs.length === 0) {
       console.log('No filtered logs, returning 0 adherence');
@@ -195,7 +189,7 @@ export default function ProgressScreen() {
     console.log('Adherence calculated:', calculatedAdherence);
 
     return calculatedAdherence;
-  }, [allLogs, targets, timeFrame, getFilteredLogs]);
+  }, [allLogs, targets, timeFrame]);
 
   // Calculate stats using useMemo
   const stats = useMemo(() => {
