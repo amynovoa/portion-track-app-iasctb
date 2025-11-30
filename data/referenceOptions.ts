@@ -94,8 +94,8 @@ export const referenceOptions: ReferenceOptions = {
     title: 'Healthy Fat Options',
     tip: 'Include healthy fats for heart health and nutrient absorption.',
     options: [
-      { name: 'Olive oil', diet: 'vegan' },
       { name: 'Avocado', diet: 'vegan' },
+      { name: 'Olive oil', diet: 'vegan' },
       { name: 'Olives', diet: 'vegan' },
       { name: 'Tahini', diet: 'vegan' },
       { name: 'Nut butter', diet: 'vegetarian' },
@@ -103,7 +103,6 @@ export const referenceOptions: ReferenceOptions = {
     portionSizes: [
       '1 tbsp olive oil',
       '1/4 avocado',
-      '1 tbsp chia or flax seeds',
       '1 tbsp nut butter',
       '8–10 olives',
       '2 tbsp hummus',
