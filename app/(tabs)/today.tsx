@@ -1,8 +1,7 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Platform, TouchableOpacity, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import { colors, commonStyles } from '@/styles/commonStyles';
 import HealthyOptionsSheet from '@/components/HealthyOptionsSheet';
 import { FoodGroup } from '@/types';
@@ -22,17 +21,9 @@ const foodGroups: { key: FoodGroup; label: string; icon: keyof typeof MaterialCo
 ];
 
 export default function TodayScreen() {
-  const { user, targets, todayLog, isLoading, updateTodayLog, refreshData } = useAppContext();
+  const { user, targets, todayLog, isLoading, updateTodayLog } = useAppContext();
   const [selectedGroup, setSelectedGroup] = useState<FoodGroup | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
-
-  // Refresh data when screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      console.log('TodayScreen: Screen focused, refreshing data');
-      refreshData();
-    }, [refreshData])
-  );
 
   const handleIncrement = useCallback(async (group: FoodGroup) => {
     if (!todayLog || !targets) {
@@ -51,12 +42,13 @@ export default function TodayScreen() {
     }
 
     const newValue = todayLog[group] + 1;
-    console.log(`Incrementing ${group} from ${todayLog[group]} to ${newValue}`);
+    console.log(`TodayScreen: Incrementing ${group} from ${todayLog[group]} to ${newValue}`);
     
     try {
       await updateTodayLog(group, newValue);
+      console.log(`TodayScreen: Successfully incremented ${group}`);
     } catch (error) {
-      console.error('Error incrementing:', error);
+      console.error('TodayScreen: Error incrementing:', error);
       Alert.alert('Error', 'Failed to save your progress. Please try again.');
     }
   }, [todayLog, targets, updateTodayLog]);
@@ -69,12 +61,13 @@ export default function TodayScreen() {
     
     if (todayLog[group] > 0) {
       const newValue = todayLog[group] - 1;
-      console.log(`Decrementing ${group} from ${todayLog[group]} to ${newValue}`);
+      console.log(`TodayScreen: Decrementing ${group} from ${todayLog[group]} to ${newValue}`);
       
       try {
         await updateTodayLog(group, newValue);
+        console.log(`TodayScreen: Successfully decremented ${group}`);
       } catch (error) {
-        console.error('Error decrementing:', error);
+        console.error('TodayScreen: Error decrementing:', error);
         Alert.alert('Error', 'Failed to save your progress. Please try again.');
       }
     }

@@ -24,6 +24,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [todayLog, setTodayLog] = useState<DailyLog | null>(null);
   const [allLogs, setAllLogs] = useState<DailyLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [updateCounter, setUpdateCounter] = useState(0);
 
   const refreshData = useCallback(async () => {
     console.log('=== AppContext: Refreshing data ===');
@@ -39,7 +40,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       console.log('AppContext: User loaded:', userData);
       console.log('AppContext: Targets loaded:', targetsData);
       console.log('AppContext: Logs loaded:', logsData.length, 'logs');
-      console.log('AppContext: Logs data:', JSON.stringify(logsData, null, 2));
 
       setUserState(userData);
       setTargetsState(targetsData);
@@ -67,7 +67,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         };
         const updatedLogs = [...logsData, todayLogData];
         await storage.setDailyLogs(updatedLogs);
-        setAllLogs(updatedLogs);
+        // Create completely new array with new object references
+        setAllLogs(updatedLogs.map(log => ({ ...log })));
       } else if (userData && shouldResetLog(todayLogData.date, userData.resetTime)) {
         console.log('AppContext: Resetting log for new day');
         todayLogData = {
@@ -86,13 +87,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const updatedLogs = logsData.filter((l) => l.date !== today);
         updatedLogs.push(todayLogData);
         await storage.setDailyLogs(updatedLogs);
-        setAllLogs(updatedLogs);
+        // Create completely new array with new object references
+        setAllLogs(updatedLogs.map(log => ({ ...log })));
       } else {
-        setAllLogs(logsData);
+        // Create completely new array with new object references
+        setAllLogs(logsData.map(log => ({ ...log })));
       }
 
       console.log('AppContext: Setting today log to:', todayLogData);
-      setTodayLog(todayLogData);
+      setTodayLog({ ...todayLogData });
     } catch (error) {
       console.error('AppContext: Error refreshing data:', error);
     } finally {
@@ -117,7 +120,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const today = getTodayDate();
     console.log(`AppContext: Today date: ${today}`);
-    console.log(`AppContext: Current todayLog:`, todayLog);
     
     // Create updated log with new value
     const updatedLog: DailyLog = { 
@@ -131,8 +133,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     // Save to storage and update allLogs
     try {
-      const currentLogs = await storage.getDailyLogs();
-      console.log('AppContext: Current logs from storage:', currentLogs.length);
+      // Get current logs from state (not storage) to avoid race conditions
+      const currentLogs = [...allLogs];
+      console.log('AppContext: Current logs from state:', currentLogs.length);
       
       const logIndex = currentLogs.findIndex((l) => l.date === today);
       console.log(`AppContext: Log index for today: ${logIndex}`);
@@ -140,25 +143,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
       let updatedLogs: DailyLog[];
       if (logIndex >= 0) {
         console.log(`AppContext: Updating existing log at index ${logIndex}`);
-        // Replace the log at the found index
+        // Create a completely new array with new object references
         updatedLogs = [
-          ...currentLogs.slice(0, logIndex),
-          updatedLog,
-          ...currentLogs.slice(logIndex + 1)
+          ...currentLogs.slice(0, logIndex).map(log => ({ ...log })),
+          { ...updatedLog },
+          ...currentLogs.slice(logIndex + 1).map(log => ({ ...log }))
         ];
       } else {
         console.log('AppContext: Adding new log to array');
-        updatedLogs = [...currentLogs, updatedLog];
+        updatedLogs = [...currentLogs.map(log => ({ ...log })), { ...updatedLog }];
       }
       
       console.log('AppContext: Saving to AsyncStorage...');
       await storage.setDailyLogs(updatedLogs);
       console.log('AppContext: Saved to AsyncStorage successfully');
       
-      // Update allLogs state - this will trigger useMemo in progress.tsx
+      // Update allLogs state with completely new array - this will trigger useMemo in progress.tsx
       console.log('AppContext: Updating allLogs state...');
       setAllLogs(updatedLogs);
-      console.log('AppContext: allLogs state updated');
+      
+      // Force re-render by incrementing counter
+      setUpdateCounter(prev => prev + 1);
+      console.log('AppContext: allLogs state updated, counter incremented');
       
       // Verify the save
       const verifyLogs = await storage.getDailyLogs();
@@ -177,7 +183,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setTodayLog(todayLog);
       throw error;
     }
-  }, [todayLog]);
+  }, [todayLog, allLogs]);
 
   const setUser = useCallback(async (newUser: User) => {
     console.log('AppContext: Setting user:', newUser);
@@ -208,6 +214,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setUser,
     setTargets,
   };
+
+  console.log('AppContext: Rendering with allLogs.length =', allLogs.length, 'updateCounter =', updateCounter);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

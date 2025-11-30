@@ -26,7 +26,9 @@ export default function ProgressScreen() {
 
   console.log('=== ProgressScreen render ===');
   console.log('allLogs length:', allLogs.length);
+  console.log('allLogs:', JSON.stringify(allLogs, null, 2));
   console.log('timeFrame:', timeFrame);
+  console.log('targets:', targets);
 
   const getTodayString = (): string => {
     const now = new Date();
@@ -75,7 +77,10 @@ export default function ProgressScreen() {
     switch (timeFrame) {
       case 'day':
         // Just today
-        filteredLogs = allLogs.filter(log => log.date === todayString);
+        filteredLogs = allLogs.filter(log => {
+          console.log(`Comparing log.date "${log.date}" with today "${todayString}"`);
+          return log.date === todayString;
+        });
         console.log('Day logs found:', filteredLogs.length);
         if (filteredLogs.length > 0) {
           console.log('Day log data:', filteredLogs[0]);
@@ -88,6 +93,7 @@ export default function ProgressScreen() {
         console.log('Week cutoff:', weekCutoff);
         filteredLogs = allLogs.filter(log => {
           const isInRange = log.date >= weekCutoff && log.date <= todayString;
+          console.log(`Log ${log.date}: in range = ${isInRange}`);
           return isInRange;
         });
         console.log('Week logs found:', filteredLogs.length);
@@ -99,6 +105,7 @@ export default function ProgressScreen() {
         console.log('Month cutoff:', monthCutoff);
         filteredLogs = allLogs.filter(log => {
           const isInRange = log.date >= monthCutoff && log.date <= todayString;
+          console.log(`Log ${log.date}: in range = ${isInRange}`);
           return isInRange;
         });
         console.log('Month logs found:', filteredLogs.length);
