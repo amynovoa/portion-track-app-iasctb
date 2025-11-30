@@ -17,7 +17,10 @@ export default function OnboardingLayout() {
       <Stack.Screen name="welcome" options={{ headerShown: false }} />
       <Stack.Screen name="goal" options={{ headerShown: false }} />
       <Stack.Screen name="diet" options={{ headerShown: false }} />
-      <Stack.Screen name="settings" options={{ headerSheen: false }} />
+      <Stack.Screen name="target-selection" options={{ headerShown: false }} />
+      <Stack.Screen name="custom-targets" options={{ headerShown: false }} />
+      <Stack.Screen name="weight" options={{ headerShown: false }} />
+      <Stack.Screen name="settings" options={{ headerShown: false }} />
     </Stack>
   );
 }

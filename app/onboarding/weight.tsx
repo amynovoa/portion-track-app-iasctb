@@ -10,6 +10,7 @@ export default function WeightScreen() {
   const params = useLocalSearchParams();
   const goal = params.goal as Goal;
   const dietStyle = (params.dietStyle as DietStyle) || 'omnivore';
+  const customTargetsString = params.customTargets as string | undefined;
   const [weight, setWeight] = useState('');
 
   const handleContinue = () => {
@@ -21,14 +22,24 @@ export default function WeightScreen() {
 
     router.push({
       pathname: '/onboarding/settings',
-      params: { goal, dietStyle, initialWeight: weight || '' },
+      params: {
+        goal,
+        dietStyle,
+        initialWeight: weight || '',
+        customTargets: customTargetsString || '',
+      },
     });
   };
 
   const handleSkip = () => {
     router.push({
       pathname: '/onboarding/settings',
-      params: { goal, dietStyle, initialWeight: '' },
+      params: {
+        goal,
+        dietStyle,
+        initialWeight: '',
+        customTargets: customTargetsString || '',
+      },
     });
   };
 

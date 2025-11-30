@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Switch, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
-import { Goal, DietStyle, User, MetricWeight } from '@/types';
+import { Goal, DietStyle, User, MetricWeight, DailyTargets } from '@/types';
 import { storage } from '@/utils/storage';
 import { createDailyTargets } from '@/utils/targetUtils';
 import { getTodayDate } from '@/utils/dateUtils';
@@ -14,6 +14,7 @@ export default function SettingsScreen() {
   const goal = params.goal as Goal;
   const dietStyle = (params.dietStyle as DietStyle) || 'omnivore';
   const initialWeight = params.initialWeight as string;
+  const customTargetsString = params.customTargets as string | undefined;
 
   const [resetTime, setResetTime] = useState('04:00');
   const [remindersOn, setRemindersOn] = useState(false);
@@ -37,7 +38,34 @@ export default function SettingsScreen() {
       reminderTimes: [],
     };
 
-    const targets = createDailyTargets(goal);
+    // Determine which targets to use
+    let targets: DailyTargets;
+    if (customTargetsString) {
+      // User set custom targets
+      try {
+        const customTargets = JSON.parse(customTargetsString);
+        targets = {
+          date: getTodayDate(),
+          protein: customTargets.protein,
+          veggies: customTargets.veggies,
+          fruit: customTargets.fruit,
+          wholeGrains: customTargets.wholeGrains,
+          fats: customTargets.fats,
+          nutsSeeds: customTargets.nutsSeeds,
+          legumes: customTargets.legumes,
+          water: customTargets.water,
+          alcohol: customTargets.alcohol,
+          dairy: 2, // Default dairy value
+        };
+      } catch (error) {
+        console.error('Error parsing custom targets:', error);
+        // Fallback to default targets
+        targets = createDailyTargets(goal);
+      }
+    } else {
+      // Use recommended targets based on goal
+      targets = createDailyTargets(goal);
+    }
 
     await storage.setUser(user);
     await storage.setDailyTargets(targets);
