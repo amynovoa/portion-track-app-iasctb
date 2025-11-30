@@ -60,6 +60,13 @@ export default function TabLayout() {
         <Stack.Screen name="progress" options={{ headerShown: false }} />
         <Stack.Screen name="metrics" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen 
+          name="daily-targets" 
+          options={{ 
+            headerShown: false,
+            presentation: 'card',
+          }} 
+        />
       </Stack>
       <FloatingTabBar tabs={tabs} />
     </>

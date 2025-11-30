@@ -1,6 +1,6 @@
 
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Image, TouchableOpacity, Alert, Switch } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Platform, Image, TouchableOpacity, Alert } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { colors } from '@/styles/commonStyles';
 import { useAppContext } from '@/contexts/AppContext';
@@ -10,8 +10,7 @@ import { IconSymbol } from '@/components/IconSymbol';
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { user, targets, allLogs, refreshData, setUser, setTargets } = useAppContext();
-  const [localTargets, setLocalTargets] = useState(targets);
+  const { user, allLogs, refreshData } = useAppContext();
 
   useFocusEffect(
     useCallback(() => {
@@ -19,25 +18,6 @@ export default function SettingsScreen() {
       refreshData();
     }, [refreshData])
   );
-
-  React.useEffect(() => {
-    setLocalTargets(targets);
-  }, [targets]);
-
-  const handleTargetChange = async (key: keyof typeof targets, delta: number) => {
-    if (!localTargets) return;
-
-    const newValue = Math.max(0, localTargets[key] + delta);
-    const updatedTargets = { ...localTargets, [key]: newValue };
-    setLocalTargets(updatedTargets);
-    
-    try {
-      await setTargets(updatedTargets);
-    } catch (error) {
-      console.error('Error updating targets:', error);
-      Alert.alert('Error', 'Failed to save targets. Please try again.');
-    }
-  };
 
   const handleExportData = async () => {
     try {
@@ -86,7 +66,7 @@ export default function SettingsScreen() {
     );
   };
 
-  if (!user || !localTargets) {
+  if (!user) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
         <Text style={styles.text}>Loading...</Text>
@@ -108,38 +88,20 @@ export default function SettingsScreen() {
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Daily Targets</Text>
+          <Text style={styles.sectionTitle}>Targets</Text>
           
-          {[
-            { key: 'protein', label: 'Protein' },
-            { key: 'veggies', label: 'Veggies' },
-            { key: 'fruit', label: 'Fruit' },
-            { key: 'wholeGrains', label: 'Whole Grains' },
-            { key: 'fats', label: 'Healthy Fats' },
-            { key: 'nutsSeeds', label: 'Nuts & Seeds' },
-            { key: 'legumes', label: 'Legumes' },
-            { key: 'dairy', label: 'Dairy' },
-            { key: 'water', label: 'Water' },
-          ].map((item, index) => (
-            <View key={index} style={styles.targetRow}>
-              <Text style={styles.targetLabel}>{item.label}</Text>
-              <View style={styles.targetControls}>
-                <TouchableOpacity
-                  style={styles.targetButton}
-                  onPress={() => handleTargetChange(item.key as keyof typeof targets, -1)}
-                >
-                  <Text style={styles.targetButtonText}>−</Text>
-                </TouchableOpacity>
-                <Text style={styles.targetValue}>{localTargets[item.key as keyof typeof targets]}</Text>
-                <TouchableOpacity
-                  style={styles.targetButton}
-                  onPress={() => handleTargetChange(item.key as keyof typeof targets, 1)}
-                >
-                  <Text style={styles.targetButtonText}>+</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
+          <TouchableOpacity 
+            style={styles.navigationRow}
+            onPress={() => router.push('/(tabs)/daily-targets')}
+          >
+            <Text style={styles.navigationLabel}>Customize My Daily Targets</Text>
+            <IconSymbol
+              ios_icon_name="chevron.right"
+              android_material_icon_name="chevron-right"
+              size={24}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.section}>
@@ -236,44 +198,18 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: 16,
   },
-  targetRow: {
+  navigationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.card,
     borderRadius: 12,
     padding: 16,
-    marginBottom: 12,
   },
-  targetLabel: {
+  navigationLabel: {
     fontSize: 16,
     fontWeight: '600',
     color: colors.text,
-  },
-  targetControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  targetButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  targetButtonText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  targetValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
-    minWidth: 30,
-    textAlign: 'center',
   },
   infoRow: {
     flexDirection: 'row',
