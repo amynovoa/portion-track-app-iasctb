@@ -24,7 +24,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [todayLog, setTodayLog] = useState<DailyLog | null>(null);
   const [allLogs, setAllLogs] = useState<DailyLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [lastRefresh, setLastRefresh] = useState<number>(0);
 
   const refreshData = useCallback(async () => {
     console.log('=== AppContext: Refreshing data ===');
@@ -68,8 +67,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         };
         const updatedLogs = [...logsData, todayLogData];
         await storage.setDailyLogs(updatedLogs);
-        // Create completely new array with new object references
-        setAllLogs(updatedLogs.map(log => ({ ...log })));
+        setAllLogs(updatedLogs);
       } else if (userData && shouldResetLog(todayLogData.date, userData.resetTime)) {
         console.log('AppContext: Resetting log for new day');
         todayLogData = {
@@ -88,16 +86,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const updatedLogs = logsData.filter((l) => l.date !== today);
         updatedLogs.push(todayLogData);
         await storage.setDailyLogs(updatedLogs);
-        // Create completely new array with new object references
-        setAllLogs(updatedLogs.map(log => ({ ...log })));
+        setAllLogs(updatedLogs);
       } else {
-        // Create completely new array with new object references
-        setAllLogs(logsData.map(log => ({ ...log })));
+        setAllLogs(logsData);
       }
 
       console.log('AppContext: Setting today log to:', todayLogData);
-      setTodayLog({ ...todayLogData });
-      setLastRefresh(Date.now());
+      setTodayLog(todayLogData);
     } catch (error) {
       console.error('AppContext: Error refreshing data:', error);
     } finally {
@@ -106,6 +101,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateTodayLog = useCallback(async (group: keyof DailyLog, value: number) => {
+    console.log(`=== AppContext: updateTodayLog called ===`);
+    console.log(`Group: ${String(group)}, Value: ${value}`);
+    
     if (!todayLog) {
       console.error('AppContext: Cannot update log - todayLog is null');
       return;
@@ -113,45 +111,54 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     // Skip if it's the date field
     if (group === 'date') {
+      console.log('AppContext: Skipping date field update');
       return;
     }
 
     const today = getTodayDate();
-    console.log(`AppContext: Updating ${group} to ${value} for date ${today}`);
+    console.log(`AppContext: Today date: ${today}`);
+    console.log(`AppContext: Current todayLog:`, todayLog);
     
-    const updatedLog: DailyLog = { ...todayLog, [group]: value };
+    // Create updated log with new value
+    const updatedLog: DailyLog = { 
+      ...todayLog, 
+      [group]: value 
+    };
     console.log('AppContext: Updated log object:', updatedLog);
     
-    // Update state immediately for responsive UI
-    setTodayLog({ ...updatedLog });
+    // Update todayLog state immediately for responsive UI
+    setTodayLog(updatedLog);
 
-    // Save to storage
+    // Save to storage and update allLogs
     try {
       const currentLogs = await storage.getDailyLogs();
-      console.log('AppContext: Current logs in storage:', currentLogs.length);
+      console.log('AppContext: Current logs from storage:', currentLogs.length);
       
       const logIndex = currentLogs.findIndex((l) => l.date === today);
+      console.log(`AppContext: Log index for today: ${logIndex}`);
       
       let updatedLogs: DailyLog[];
       if (logIndex >= 0) {
         console.log(`AppContext: Updating existing log at index ${logIndex}`);
-        updatedLogs = [...currentLogs];
-        updatedLogs[logIndex] = { ...updatedLog };
+        // Replace the log at the found index
+        updatedLogs = [
+          ...currentLogs.slice(0, logIndex),
+          updatedLog,
+          ...currentLogs.slice(logIndex + 1)
+        ];
       } else {
         console.log('AppContext: Adding new log to array');
-        updatedLogs = [...currentLogs, { ...updatedLog }];
+        updatedLogs = [...currentLogs, updatedLog];
       }
       
-      console.log('AppContext: Saving updated logs to AsyncStorage');
+      console.log('AppContext: Saving to AsyncStorage...');
       await storage.setDailyLogs(updatedLogs);
+      console.log('AppContext: Saved to AsyncStorage successfully');
       
-      // CRITICAL: Create a completely new array with new object references
-      // This ensures React detects the change and useMemo dependencies work correctly
-      const newLogsArray = updatedLogs.map(log => ({ ...log }));
-      setAllLogs(newLogsArray);
-      setLastRefresh(Date.now());
-      
-      console.log('AppContext: Updated allLogs state with new reference');
+      // Update allLogs state - this will trigger useMemo in progress.tsx
+      console.log('AppContext: Updating allLogs state...');
+      setAllLogs(updatedLogs);
+      console.log('AppContext: allLogs state updated');
       
       // Verify the save
       const verifyLogs = await storage.getDailyLogs();
@@ -162,9 +169,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         console.log('AppContext: ✓ Save verified successfully');
       } else {
         console.error('AppContext: ✗ Save verification failed!');
+        console.error(`Expected ${String(group)} to be ${value}, but got ${verifyTodayLog ? verifyTodayLog[group] : 'undefined'}`);
       }
     } catch (error) {
       console.error('AppContext: Error saving log:', error);
+      // Revert todayLog state on error
+      setTodayLog(todayLog);
       throw error;
     }
   }, [todayLog]);
@@ -172,13 +182,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setUser = useCallback(async (newUser: User) => {
     console.log('AppContext: Setting user:', newUser);
     await storage.setUser(newUser);
-    setUserState({ ...newUser });
+    setUserState(newUser);
   }, []);
 
   const setTargets = useCallback(async (newTargets: DailyTargets) => {
     console.log('AppContext: Setting targets:', newTargets);
     await storage.setDailyTargets(newTargets);
-    setTargetsState({ ...newTargets });
+    setTargetsState(newTargets);
   }, []);
 
   // Load data on mount
