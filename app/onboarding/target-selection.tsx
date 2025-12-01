@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
 import { Goal, DietStyle } from '@/types';
@@ -34,68 +34,74 @@ export default function TargetSelectionScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>How do you want to set your daily portion targets?</Text>
-        <Text style={styles.subtitle}>
-          Choose the option that works best for you
-        </Text>
-      </View>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>How do you want to set your daily portion targets?</Text>
+          <Text style={styles.subtitle}>
+            Choose the option that works best for you
+          </Text>
+        </View>
 
-      <View style={styles.optionsContainer}>
-        <TouchableOpacity
-          style={[styles.optionCard, selectedOption === 'recommended' && styles.optionCardSelected]}
-          onPress={() => setSelectedOption('recommended')}
-        >
-          <View style={styles.optionIcon}>
-            <IconSymbol
-              ios_icon_name="star.fill"
-              android_material_icon_name="star"
-              size={32}
-              color={selectedOption === 'recommended' ? colors.primary : colors.textSecondary}
-            />
-          </View>
-          <View style={styles.optionContent}>
-            <Text style={styles.optionLabel}>Use recommended targets</Text>
-            <Text style={styles.optionDescription}>Most users choose this option.</Text>
-            <Text style={styles.optionSubtext}>
-              We&apos;ll set balanced portion targets based on your goal
-            </Text>
-          </View>
-        </TouchableOpacity>
+        <View style={styles.optionsContainer}>
+          <TouchableOpacity
+            style={[styles.optionCard, selectedOption === 'recommended' && styles.optionCardSelected]}
+            onPress={() => setSelectedOption('recommended')}
+          >
+            <View style={styles.optionIcon}>
+              <IconSymbol
+                ios_icon_name="star.fill"
+                android_material_icon_name="star"
+                size={32}
+                color={selectedOption === 'recommended' ? colors.primary : colors.textSecondary}
+              />
+            </View>
+            <View style={styles.optionContent}>
+              <Text style={styles.optionLabel}>Use recommended targets</Text>
+              <Text style={styles.optionDescription}>Most users choose this option.</Text>
+              <Text style={styles.optionSubtext}>
+                We&apos;ll set balanced portion targets based on your goal
+              </Text>
+            </View>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.optionCard, selectedOption === 'custom' && styles.optionCardSelected]}
-          onPress={() => setSelectedOption('custom')}
-        >
-          <View style={styles.optionIcon}>
-            <IconSymbol
-              ios_icon_name="slider.horizontal.3"
-              android_material_icon_name="tune"
-              size={32}
-              color={selectedOption === 'custom' ? colors.primary : colors.textSecondary}
-            />
-          </View>
-          <View style={styles.optionContent}>
-            <Text style={styles.optionLabel}>Set my own targets</Text>
-            <Text style={styles.optionDescription}>Customize portions for each category.</Text>
-            <Text style={styles.optionSubtext}>
-              Perfect if you have specific dietary requirements
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={[styles.optionCard, selectedOption === 'custom' && styles.optionCardSelected]}
+            onPress={() => setSelectedOption('custom')}
+          >
+            <View style={styles.optionIcon}>
+              <IconSymbol
+                ios_icon_name="slider.horizontal.3"
+                android_material_icon_name="tune"
+                size={32}
+                color={selectedOption === 'custom' ? colors.primary : colors.textSecondary}
+              />
+            </View>
+            <View style={styles.optionContent}>
+              <Text style={styles.optionLabel}>Set my own targets</Text>
+              <Text style={styles.optionDescription}>Customize portions for each category.</Text>
+              <Text style={styles.optionSubtext}>
+                Perfect if you have specific dietary requirements
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.infoBox}>
-        <IconSymbol
-          ios_icon_name="info.circle.fill"
-          android_material_icon_name="info"
-          size={18}
-          color={colors.primary}
-        />
-        <Text style={styles.infoText}>
-          You can always adjust your targets later in Settings
-        </Text>
-      </View>
+        <View style={styles.infoBox}>
+          <IconSymbol
+            ios_icon_name="info.circle.fill"
+            android_material_icon_name="info"
+            size={18}
+            color={colors.primary}
+          />
+          <Text style={styles.infoText}>
+            You can always adjust your targets later in Settings
+          </Text>
+        </View>
+      </ScrollView>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -114,12 +120,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingTop: 60,
+    paddingTop: Platform.OS === 'android' ? 48 : 60,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
     paddingHorizontal: 24,
-    paddingBottom: 40,
+    paddingBottom: 20,
   },
   header: {
     marginBottom: 24,
+    marginTop: 20,
   },
   title: {
     fontSize: 26,
@@ -134,9 +146,8 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   optionsContainer: {
-    flex: 1,
     gap: 16,
-    justifyContent: 'center',
+    marginBottom: 20,
   },
   optionCard: {
     flexDirection: 'row',
@@ -182,7 +193,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderRadius: 10,
     padding: 14,
-    marginBottom: 16,
     gap: 10,
   },
   infoText: {
@@ -192,7 +202,12 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   buttonContainer: {
-    width: '100%',
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    paddingBottom: 40,
+    backgroundColor: colors.background,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
   },
   buttonDisabled: {
     opacity: 0.5,

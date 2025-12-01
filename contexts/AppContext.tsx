@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { storage } from '@/utils/storage';
 import { User, DailyTargets, DailyLog } from '@/types';
-import { getTodayDate, shouldResetLog } from '@/utils/dateUtils';
+import { getTodayDate } from '@/utils/dateUtils';
 
 interface AppContextType {
   user: User | null;
@@ -65,25 +65,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
           dairy: 0,
         };
         const updatedLogs = [...logsData, todayLogData];
-        await storage.setDailyLogs(updatedLogs);
-        setAllLogs(updatedLogs);
-      } else if (userData && shouldResetLog(todayLogData.date, userData.resetTime)) {
-        console.log('AppContext: Resetting log for new day');
-        todayLogData = {
-          date: today,
-          protein: 0,
-          veggies: 0,
-          fruit: 0,
-          wholeGrains: 0,
-          fats: 0,
-          nutsSeeds: 0,
-          legumes: 0,
-          water: 0,
-          alcohol: 0,
-          dairy: 0,
-        };
-        const updatedLogs = logsData.filter((l) => l.date !== today);
-        updatedLogs.push(todayLogData);
         await storage.setDailyLogs(updatedLogs);
         setAllLogs(updatedLogs);
       } else {
@@ -195,6 +176,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
     console.log('AppContext: Initial mount, loading data');
     refreshData();
   }, [refreshData]);
+
+  // Check for daily reset every minute
+  useEffect(() => {
+    const checkDailyReset = async () => {
+      if (!user || !todayLog) return;
+      
+      const today = getTodayDate();
+      console.log('AppContext: Checking daily reset - today:', today, 'todayLog.date:', todayLog.date);
+      
+      // If the date has changed, refresh data to create a new log
+      if (todayLog.date !== today) {
+        console.log('AppContext: Date changed! Refreshing data to create new log');
+        await refreshData();
+      }
+    };
+
+    // Check immediately
+    checkDailyReset();
+
+    // Check every minute
+    const interval = setInterval(checkDailyReset, 60000);
+
+    return () => clearInterval(interval);
+  }, [user, todayLog, refreshData]);
 
   const value: AppContextType = {
     user,
