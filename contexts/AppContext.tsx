@@ -18,6 +18,27 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+// Helper function to deduplicate logs by date, keeping the most recent entry
+function deduplicateLogs(logs: DailyLog[]): DailyLog[] {
+  console.log('=== Deduplicating logs ===');
+  console.log('Input logs count:', logs.length);
+  
+  const logMap = new Map<string, DailyLog>();
+  
+  // Process logs in order, later entries will overwrite earlier ones with the same date
+  logs.forEach(log => {
+    if (logMap.has(log.date)) {
+      console.log(`Found duplicate for date ${log.date}, keeping latest`);
+    }
+    logMap.set(log.date, log);
+  });
+  
+  const deduplicated = Array.from(logMap.values());
+  console.log('Output logs count:', deduplicated.length);
+  
+  return deduplicated;
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<User | null>(null);
   const [targets, setTargetsState] = useState<DailyTargets | null>(null);
@@ -43,10 +64,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setUserState(userData);
       setTargetsState(targetsData);
 
+      // Deduplicate logs to fix any existing duplicates
+      const deduplicatedLogs = deduplicateLogs(logsData);
+      
+      // If we found duplicates, save the cleaned data back to storage
+      if (deduplicatedLogs.length !== logsData.length) {
+        console.log('AppContext: Found duplicates, saving cleaned logs to storage');
+        await storage.setDailyLogs(deduplicatedLogs);
+      }
+
       const today = getTodayDate();
       console.log('AppContext: Today date:', today);
       
-      let todayLogData = logsData.find((l) => l.date === today);
+      let todayLogData = deduplicatedLogs.find((l) => l.date === today);
       console.log('AppContext: Found today log:', todayLogData);
 
       if (!todayLogData) {
@@ -64,11 +94,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
           alcohol: 0,
           dairy: 0,
         };
-        const updatedLogs = [...logsData, todayLogData];
+        const updatedLogs = [...deduplicatedLogs, todayLogData];
         await storage.setDailyLogs(updatedLogs);
         setAllLogs(updatedLogs);
       } else {
-        setAllLogs(logsData);
+        setAllLogs(deduplicatedLogs);
       }
 
       console.log('AppContext: Setting today log to:', todayLogData);
@@ -114,30 +144,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const currentLogs = [...allLogs];
       console.log('AppContext: Current logs from state:', currentLogs.length);
       
-      const logIndex = currentLogs.findIndex((l) => l.date === today);
-      console.log(`AppContext: Log index for today: ${logIndex}`);
+      // Remove ALL logs with today's date (in case there are duplicates)
+      const logsWithoutToday = currentLogs.filter((l) => l.date !== today);
+      console.log(`AppContext: Removed ${currentLogs.length - logsWithoutToday.length} log(s) for today`);
       
-      let updatedLogs: DailyLog[];
-      if (logIndex >= 0) {
-        console.log(`AppContext: Updating existing log at index ${logIndex}`);
-        // Replace the log at the found index
-        updatedLogs = [
-          ...currentLogs.slice(0, logIndex),
-          updatedLog,
-          ...currentLogs.slice(logIndex + 1)
-        ];
-      } else {
-        console.log('AppContext: Adding new log to array');
-        updatedLogs = [...currentLogs, updatedLog];
-      }
+      // Add the updated log
+      const updatedLogs = [...logsWithoutToday, updatedLog];
+      console.log('AppContext: New logs array length:', updatedLogs.length);
+      
+      // Deduplicate just to be safe
+      const deduplicatedLogs = deduplicateLogs(updatedLogs);
       
       console.log('AppContext: Saving to AsyncStorage...');
-      await storage.setDailyLogs(updatedLogs);
+      await storage.setDailyLogs(deduplicatedLogs);
       console.log('AppContext: Saved to AsyncStorage successfully');
       
       // Update allLogs state - this will trigger re-renders in all components
       console.log('AppContext: Updating allLogs state...');
-      setAllLogs(updatedLogs);
+      setAllLogs(deduplicatedLogs);
       console.log('AppContext: allLogs state updated');
       
       // Verify the save
