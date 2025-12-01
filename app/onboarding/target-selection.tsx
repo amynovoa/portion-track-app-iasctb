@@ -127,11 +127,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingBottom: 20,
+    paddingTop: 20,
+    paddingBottom: 120,
   },
   header: {
     marginBottom: 24,
-    marginTop: 20,
   },
   title: {
     fontSize: 26,
@@ -202,6 +202,10 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     paddingHorizontal: 24,
     paddingVertical: 20,
     paddingBottom: 40,

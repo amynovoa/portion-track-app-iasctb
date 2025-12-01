@@ -136,7 +136,7 @@ export default function SettingsScreen() {
             <View style={styles.settingContent}>
               <Text style={styles.settingLabel}>Daily Reminders</Text>
               <Text style={styles.settingDescription}>
-                Get reminded to log your portions
+                Enable to receive reminders (coming soon)
               </Text>
             </View>
             <Switch

@@ -22,16 +22,16 @@ const foodGroups: { key: FoodGroup; label: string; icon: keyof typeof MaterialCo
 ];
 
 export default function TodayScreen() {
-  const { user, targets, todayLog, isLoading, updateTodayLog } = useAppContext();
+  const { user, targets, todayLog, isLoading, updateTodayLog, refreshData } = useAppContext();
   const [selectedGroup, setSelectedGroup] = useState<FoodGroup | null>(null);
   const [sheetVisible, setSheetVisible] = useState(false);
 
-  // Log when screen comes into focus
+  // Refresh data when screen comes into focus to ensure we have the latest data
   useFocusEffect(
     useCallback(() => {
-      console.log('=== TodayScreen focused ===');
-      console.log('todayLog:', todayLog);
-    }, [todayLog])
+      console.log('=== TodayScreen focused - refreshing data ===');
+      refreshData();
+    }, [refreshData])
   );
 
   const handleIncrement = useCallback(async (group: FoodGroup) => {
