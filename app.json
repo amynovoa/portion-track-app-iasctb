@@ -1,3 +1,4 @@
+
 {
   "expo": {
     "name": "Portion Track",
@@ -26,14 +27,25 @@
         "monochromeImage": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png"
       },
       "package": "com.portiontrack.app",
-      "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png"
+      "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
     },
     "web": {
       "favicon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
+          "color": "#B93822",
+          "defaultChannel": "daily-reminders"
+        }
+      ]
     ],
     "scheme": "portion-track",
     "experiments": {

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, Platform, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
 import { Goal, DietStyle, User, MetricWeight, DailyTargets } from '@/types';
@@ -8,6 +8,7 @@ import { storage } from '@/utils/storage';
 import { createDailyTargets } from '@/utils/targetUtils';
 import { getTodayDate } from '@/utils/dateUtils';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { requestNotificationPermissions, scheduleDailyReminder } from '@/utils/notifications';
 
 export default function SettingsScreen() {
   const params = useLocalSearchParams();
@@ -27,6 +28,26 @@ export default function SettingsScreen() {
       const minutes = selectedDate.getMinutes().toString().padStart(2, '0');
       setResetTime(`${hours}:${minutes}`);
     }
+  };
+
+  const handleReminderToggle = async (value: boolean) => {
+    if (value) {
+      // Request permissions when enabling reminders
+      const hasPermission = await requestNotificationPermissions();
+      
+      if (!hasPermission) {
+        Alert.alert(
+          'Permission Required',
+          'Please enable notifications in your device settings to receive daily reminders.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+      
+      console.log('Reminders enabled during onboarding');
+    }
+    
+    setRemindersOn(value);
   };
 
   const handleComplete = async () => {
@@ -79,6 +100,16 @@ export default function SettingsScreen() {
           value: weight,
         };
         await storage.setWeightMetrics([weightEntry]);
+      }
+    }
+
+    // Schedule notifications if reminders are enabled
+    if (remindersOn) {
+      try {
+        await scheduleDailyReminder();
+        console.log('Daily reminder scheduled during onboarding');
+      } catch (error) {
+        console.error('Error scheduling reminder during onboarding:', error);
       }
     }
 
@@ -136,12 +167,12 @@ export default function SettingsScreen() {
             <View style={styles.settingContent}>
               <Text style={styles.settingLabel}>Daily Reminders</Text>
               <Text style={styles.settingDescription}>
-                Enable to receive reminders (coming soon)
+                Get a reminder at 1 PM if you haven&apos;t logged yet
               </Text>
             </View>
             <Switch
               value={remindersOn}
-              onValueChange={setRemindersOn}
+              onValueChange={handleReminderToggle}
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor={colors.background}
             />

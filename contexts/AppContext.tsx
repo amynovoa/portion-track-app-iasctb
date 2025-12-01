@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, Rea
 import { storage } from '@/utils/storage';
 import { User, DailyTargets, DailyLog } from '@/types';
 import { getTodayDate } from '@/utils/dateUtils';
+import { initializeNotifications } from '@/utils/notifications';
 
 interface AppContextType {
   user: User | null;
@@ -187,6 +188,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     console.log('AppContext: Setting user:', newUser);
     await storage.setUser(newUser);
     setUserState(newUser);
+    
+    // Re-initialize notifications when user settings change
+    await initializeNotifications();
   }, []);
 
   const setTargets = useCallback(async (newTargets: DailyTargets) => {
@@ -200,6 +204,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     console.log('AppContext: Initial mount, loading data');
     refreshData();
   }, [refreshData]);
+
+  // Initialize notifications after user data is loaded
+  useEffect(() => {
+    if (user) {
+      console.log('AppContext: User loaded, initializing notifications');
+      initializeNotifications();
+    }
+  }, [user]);
 
   // Check for daily reset every minute
   useEffect(() => {

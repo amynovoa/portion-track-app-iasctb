@@ -2,7 +2,7 @@
 import "react-native-reanimated";
 import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { SystemBars } from "react-native-edge-to-edge";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -15,6 +15,7 @@ import {
 } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { AppProvider } from "@/contexts/AppContext";
+import { setupNotificationResponseHandler, getLastNotificationResponse } from "@/utils/notifications";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,6 +25,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const router = useRouter();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -33,6 +35,40 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  // Setup notification handlers
+  useEffect(() => {
+    console.log('Setting up notification handlers in root layout');
+    
+    // Handle notification taps when app is running
+    const subscription = setupNotificationResponseHandler((screen) => {
+      console.log('Notification handler: navigating to', screen);
+      if (screen === 'today') {
+        router.push('/(tabs)/today');
+      }
+    });
+
+    // Check if app was opened from a notification (when app was killed)
+    const checkLastNotification = async () => {
+      const lastResponse = await getLastNotificationResponse();
+      if (lastResponse) {
+        const screen = lastResponse.notification.request.content.data?.screen;
+        console.log('App opened from notification, screen:', screen);
+        if (screen === 'today') {
+          // Small delay to ensure navigation is ready
+          setTimeout(() => {
+            router.push('/(tabs)/today');
+          }, 500);
+        }
+      }
+    };
+
+    checkLastNotification();
+
+    return () => {
+      subscription.remove();
+    };
+  }, [router]);
 
   if (!loaded) {
     return null;
