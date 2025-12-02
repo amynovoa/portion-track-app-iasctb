@@ -19,6 +19,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.portiontrack.app",
       "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
+      "buildNumber": "1",
       "infoPlist": {
         "UIBackgroundModes": ["remote-notification"]
       }
@@ -30,6 +31,7 @@
         "monochromeImage": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png"
       },
       "package": "com.portiontrack.app",
+      "versionCode": 1,
       "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
       "permissions": [
         "android.permission.SCHEDULE_EXACT_ALARM",
@@ -54,6 +56,14 @@
     "scheme": "portiontrack",
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": ""
+      }
     }
   }
 }

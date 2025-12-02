@@ -6,7 +6,7 @@ import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { SystemBars } from "react-native-edge-to-edge";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useColorScheme } from "react-native";
+import { useColorScheme, StyleSheet } from "react-native";
 import {
   DarkTheme,
   DefaultTheme,
@@ -106,7 +106,7 @@ export default function RootLayout() {
         value={colorScheme === "dark" ? CustomDarkTheme : CustomDefaultTheme}
       >
         <AppProvider>
-          <GestureHandlerRootView>
+          <GestureHandlerRootView style={styles.container}>
             <Stack
               screenOptions={{
                 headerShown: false,
@@ -123,3 +123,9 @@ export default function RootLayout() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
