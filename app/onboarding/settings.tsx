@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Switch, Platform, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
-import { Goal, DietStyle, User, MetricWeight, DailyTargets } from '@/types';
+import { Goal, DietStyle, User, MetricWeight, Sex, PortionPlan } from '@/types';
 import { storage } from '@/utils/storage';
-import { createDailyTargets } from '@/utils/targetUtils';
+import { portionPlanToDailyTargets } from '@/utils/targetUtils';
 import { getTodayDate } from '@/utils/dateUtils';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { requestNotificationPermissions, scheduleDailyReminder } from '@/utils/notifications';
@@ -14,8 +14,10 @@ export default function SettingsScreen() {
   const params = useLocalSearchParams();
   const goal = params.goal as Goal;
   const dietStyle = (params.dietStyle as DietStyle) || 'omnivore';
-  const initialWeight = params.initialWeight as string;
-  const customTargetsString = params.customTargets as string | undefined;
+  const currentWeightStr = params.currentWeight as string;
+  const sex = params.sex as Sex;
+  const targetWeightStr = params.targetWeight as string;
+  const portionPlanStr = params.portionPlan as string;
 
   const [resetTime, setResetTime] = useState('04:00');
   const [remindersOn, setRemindersOn] = useState(false);
@@ -51,49 +53,55 @@ export default function SettingsScreen() {
   };
 
   const handleComplete = async () => {
+    // Parse portion plan
+    let portionPlan: PortionPlan | undefined;
+    if (portionPlanStr) {
+      try {
+        portionPlan = JSON.parse(portionPlanStr);
+      } catch (error) {
+        console.error('Error parsing portion plan:', error);
+      }
+    }
+
     const user: User = {
       goal,
       dietStyle,
       resetTime,
       remindersOn,
       reminderTimes: [],
+      sex: sex || undefined,
+      currentWeight: currentWeightStr ? parseFloat(currentWeightStr) : undefined,
+      targetWeight: targetWeightStr ? parseFloat(targetWeightStr) : undefined,
+      portionPlan,
     };
 
-    // Determine which targets to use
-    let targets: DailyTargets;
-    if (customTargetsString) {
-      // User set custom targets
-      try {
-        const customTargets = JSON.parse(customTargetsString);
-        targets = {
-          date: getTodayDate(),
-          protein: customTargets.protein,
-          veggies: customTargets.veggies,
-          fruit: customTargets.fruit,
-          wholeGrains: customTargets.wholeGrains,
-          fats: customTargets.fats,
-          nutsSeeds: customTargets.nutsSeeds,
-          legumes: customTargets.legumes,
-          water: customTargets.water,
-          alcohol: customTargets.alcohol,
-          dairy: 2, // Default dairy value
-        };
-      } catch (error) {
-        console.error('Error parsing custom targets:', error);
-        // Fallback to default targets
-        targets = createDailyTargets(goal);
-      }
+    // Convert portion plan to daily targets
+    let targets;
+    if (portionPlan) {
+      targets = portionPlanToDailyTargets(portionPlan);
     } else {
-      // Use recommended targets based on goal
-      targets = createDailyTargets(goal);
+      // Fallback to default targets (shouldn't happen in new flow)
+      targets = {
+        date: getTodayDate(),
+        protein: 4,
+        veggies: 4,
+        fruit: 2,
+        wholeGrains: 4,
+        fats: 3,
+        nutsSeeds: 1,
+        legumes: 1,
+        water: 8,
+        alcohol: 2,
+        dairy: 2,
+      };
     }
 
     await storage.setUser(user);
     await storage.setDailyTargets(targets);
 
     // Save initial weight if provided
-    if (initialWeight) {
-      const weight = parseFloat(initialWeight);
+    if (currentWeightStr) {
+      const weight = parseFloat(currentWeightStr);
       if (!isNaN(weight) && weight > 0) {
         const weightEntry: MetricWeight = {
           date: getTodayDate(),

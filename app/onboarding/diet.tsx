@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { colors, buttonStyles } from '@/styles/commonStyles';
-import { DietStyle, Goal } from '@/types';
+import { DietStyle, Goal, Sex } from '@/types';
 import { IconSymbol } from '@/components/IconSymbol';
 
 const dietStyles: { value: DietStyle; label: string; description: string; icon: { ios: string; android: string } }[] = [
@@ -30,12 +30,23 @@ const dietStyles: { value: DietStyle; label: string; description: string; icon: 
 export default function DietScreen() {
   const params = useLocalSearchParams();
   const goal = params.goal as Goal;
+  const currentWeight = params.currentWeight as string;
+  const sex = params.sex as Sex;
+  const targetWeight = params.targetWeight as string;
+  const portionPlan = params.portionPlan as string;
   const [selectedDiet, setSelectedDiet] = useState<DietStyle>('omnivore');
 
   const handleContinue = () => {
     router.push({
-      pathname: '/onboarding/target-selection',
-      params: { goal, dietStyle: selectedDiet },
+      pathname: '/onboarding/settings',
+      params: {
+        goal,
+        dietStyle: selectedDiet,
+        currentWeight,
+        sex,
+        targetWeight,
+        portionPlan,
+      },
     });
   };
 

@@ -1,6 +1,20 @@
 
-export type Goal = 'weight_loss' | 'maintenance' | 'heart_health';
+export type Goal = 'Lose weight' | 'Maintain' | 'Gain muscle' | 'Eat healthier';
 export type DietStyle = 'omnivore' | 'vegetarian' | 'vegan';
+export type Sex = 'Male' | 'Female' | 'Prefer not to say';
+export type Size = 'Small' | 'Medium' | 'Large';
+
+export interface PortionPlan {
+  protein: number;
+  veggies: number;
+  fruit: number;
+  wholeGrains: number;
+  legumes: number;
+  fats: number;
+  nutsSeeds: number;
+  alcohol: number;
+  water: number;
+}
 
 export interface User {
   goal: Goal;
@@ -8,6 +22,10 @@ export interface User {
   resetTime: string;
   remindersOn: boolean;
   reminderTimes: string[];
+  sex?: Sex;
+  currentWeight?: number;
+  targetWeight?: number;
+  portionPlan?: PortionPlan;
 }
 
 export interface DailyTargets {

@@ -8,21 +8,27 @@ import { IconSymbol } from '@/components/IconSymbol';
 
 const goals: { value: Goal; label: string; description: string; icon: { ios: string; android: string } }[] = [
   {
-    value: 'weight_loss',
-    label: 'Weight Loss',
+    value: 'Lose weight',
+    label: 'Lose Weight',
     description: 'Balanced portions to support healthy weight management',
     icon: { ios: 'arrow.down.circle.fill', android: 'trending_down' },
   },
   {
-    value: 'maintenance',
-    label: 'Maintenance',
+    value: 'Maintain',
+    label: 'Maintain',
     description: 'Maintain your current weight with balanced nutrition',
     icon: { ios: 'equal.circle.fill', android: 'trending_flat' },
   },
   {
-    value: 'heart_health',
-    label: 'Heart Health',
-    description: 'Focus on heart-healthy foods and portions',
+    value: 'Gain muscle',
+    label: 'Gain Muscle',
+    description: 'Optimize protein and portions for muscle growth',
+    icon: { ios: 'figure.strengthtraining.traditional', android: 'fitness_center' },
+  },
+  {
+    value: 'Eat healthier',
+    label: 'Eat Healthier',
+    description: 'Focus on nutritious foods and balanced portions',
     icon: { ios: 'heart.fill', android: 'favorite' },
   },
 ];
@@ -33,7 +39,7 @@ export default function GoalScreen() {
   const handleContinue = () => {
     if (selectedGoal) {
       router.push({
-        pathname: '/onboarding/diet',
+        pathname: '/onboarding/stats',
         params: { goal: selectedGoal },
       });
     }
