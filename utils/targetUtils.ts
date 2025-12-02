@@ -41,7 +41,7 @@ export function getDefaultTargets(goal: Goal): Omit<DailyTargets, 'date'> {
         nutsSeeds: 1,
         legumes: 1,
         water: 9,
-        alcohol: 3,
+        alcohol: 2,
         dairy: 2,
       };
     case 'Eat healthier':
@@ -149,7 +149,8 @@ export function calculatePortionPlan(
       if (size === 'Medium' || size === 'Large') {
         plan.wholeGrains += 1;
       }
-      plan.alcohol = 3;
+      // Cap alcohol at 2 for initial calculation
+      plan.alcohol = 2;
       break;
 
     case 'Eat healthier':
