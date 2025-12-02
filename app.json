@@ -37,7 +37,8 @@
       "permissions": [
         "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.POST_NOTIFICATIONS"
-      ]
+      ],
+      "jsEngine": "jsc"
     },
     "web": {
       "favicon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",

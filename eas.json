@@ -22,6 +22,9 @@
         "buildConfiguration": "Release",
         "cache": {
           "disabled": true
+        },
+        "cocoapods": {
+          "clean": true
         }
       },
       "android": {
@@ -34,6 +37,9 @@
         "buildConfiguration": "Release",
         "cache": {
           "disabled": true
+        },
+        "cocoapods": {
+          "clean": true
         }
       },
       "android": {
