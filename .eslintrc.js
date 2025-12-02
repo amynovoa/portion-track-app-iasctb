@@ -1,23 +1,8 @@
 
 // https://docs.expo.dev/guides/using-eslint/
 module.exports = {
-  extends: [
-    'expo',
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime'
-  ],
-  parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'react'],
+  extends: ['expo'],
   root: true,
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true
-    }
-  },
   ignorePatterns: ['/dist/*', '/public/*', '/babel-plugins/*'],
   env: {
     browser: true,
@@ -27,12 +12,7 @@ module.exports = {
   rules: {
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/prefer-as-const": "off",
-    "@typescript-eslint/no-var-requires": "off",
     "react/react-in-jsx-scope": "off",
-    "@typescript-eslint/no-empty-object-type": "off",
-    "@typescript-eslint/no-wrapper-object-types": "off",
-    "@typescript-eslint/ban-tslint-comment": "off",
     "react/no-unescaped-entities": "off",
     "prefer-const": "off",
     "react/prop-types": "off",
@@ -40,11 +20,6 @@ module.exports = {
     "no-empty": "off",
     "react/display-name": "off",
     "no-var": "off"
-  },
-  settings: {
-    react: {
-      version: 'detect'
-    }
   },
   overrides: [
     {

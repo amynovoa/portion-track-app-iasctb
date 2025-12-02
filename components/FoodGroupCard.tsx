@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from './IconSymbol';
 import ProgressRing from './ProgressRing';
@@ -38,7 +38,6 @@ export default function FoodGroupCard({
   onIncrement,
   onDecrement,
   onInfo,
-  imageUrl,
 }: FoodGroupCardProps) {
   const isOverTarget = current > target;
   const icon = foodGroupIcons[group];
