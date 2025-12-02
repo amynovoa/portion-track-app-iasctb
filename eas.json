@@ -29,7 +29,13 @@
         }
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "cache": {
+          "disabled": true
+        }
+      },
+      "env": {
+        "EXPO_USE_HERMES": "0"
       }
     },
     "production": {
@@ -45,7 +51,13 @@
         }
       },
       "android": {
-        "buildType": "aab"
+        "buildType": "aab",
+        "cache": {
+          "disabled": true
+        }
+      },
+      "env": {
+        "EXPO_USE_HERMES": "0"
       }
     }
   },
