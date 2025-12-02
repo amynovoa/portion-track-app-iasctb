@@ -22,7 +22,8 @@
       "buildNumber": "1",
       "infoPlist": {
         "UIBackgroundModes": ["remote-notification"]
-      }
+      },
+      "jsEngine": "jsc"
     },
     "android": {
       "adaptiveIcon": {

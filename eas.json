@@ -19,7 +19,10 @@
       "distribution": "internal",
       "ios": {
         "simulator": false,
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "cache": {
+          "disabled": true
+        }
       },
       "android": {
         "buildType": "apk"
@@ -28,7 +31,10 @@
     "production": {
       "ios": {
         "simulator": false,
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "cache": {
+          "disabled": true
+        }
       },
       "android": {
         "buildType": "aab"
