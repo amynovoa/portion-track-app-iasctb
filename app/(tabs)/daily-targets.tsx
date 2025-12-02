@@ -72,6 +72,7 @@ export default function DailyTargetsScreen() {
             { key: 'legumes', label: 'Legumes' },
             { key: 'dairy', label: 'Dairy' },
             { key: 'water', label: 'Water' },
+            { key: 'alcohol', label: 'Alcohol' },
           ].map((item, index) => (
             <View key={index} style={styles.targetRow}>
               <Text style={styles.targetLabel}>{item.label}</Text>

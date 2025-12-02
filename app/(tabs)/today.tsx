@@ -40,16 +40,6 @@ export default function TodayScreen() {
       return;
     }
 
-    // Hard cap alcohol at 2 portions per day
-    if (group === 'alcohol' && todayLog.alcohol >= 2) {
-      Alert.alert(
-        'Daily Limit Reached',
-        'Daily alcohol limit reached (2/2). Adjust in Settings if needed.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-
     const newValue = todayLog[group] + 1;
     console.log(`TodayScreen: Incrementing ${group} from ${todayLog[group]} to ${newValue}`);
     
@@ -118,8 +108,7 @@ export default function TodayScreen() {
       >
         {foodGroups.map((group, index) => {
           const current = todayLog[group.key];
-          // For alcohol, always show max of 2 regardless of target setting
-          const target = group.key === 'alcohol' ? 2 : targets[group.key];
+          const target = targets[group.key];
           const isOverTarget = current > target;
           const progress = target > 0 ? (current / target) * 100 : 0;
 
