@@ -20,19 +20,10 @@
       "ios": {
         "simulator": false,
         "buildConfiguration": "Release",
-        "resourceClass": "m-medium",
-        "cache": {
-          "disabled": true
-        },
-        "cocoapods": {
-          "clean": true
-        }
+        "resourceClass": "m-medium"
       },
       "android": {
-        "buildType": "apk",
-        "cache": {
-          "disabled": true
-        }
+        "buildType": "apk"
       },
       "env": {
         "EXPO_USE_HERMES": "0",
@@ -43,19 +34,10 @@
       "ios": {
         "simulator": false,
         "buildConfiguration": "Release",
-        "resourceClass": "m-medium",
-        "cache": {
-          "disabled": true
-        },
-        "cocoapods": {
-          "clean": true
-        }
+        "resourceClass": "m-medium"
       },
       "android": {
-        "buildType": "aab",
-        "cache": {
-          "disabled": true
-        }
+        "buildType": "aab"
       },
       "env": {
         "EXPO_USE_HERMES": "0",
