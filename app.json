@@ -1,7 +1,8 @@
+
 {
   "expo": {
     "name": "Portion Track",
-    "slug": "Portion Track",
+    "slug": "portion-track",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
@@ -17,7 +18,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.portiontrack.app",
-      "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png"
+      "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +32,8 @@
       "package": "com.portiontrack.app",
       "icon": "./assets/images/efcc7b9b-45a9-47be-b8ad-f8e8ccb016ce.png",
       "permissions": [
-        "android.permission.SCHEDULE_EXACT_ALARM"
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.POST_NOTIFICATIONS"
       ]
     },
     "web": {
@@ -46,10 +51,9 @@
         }
       ]
     ],
-    "scheme": "portion-track",
+    "scheme": "portiontrack",
     "experiments": {
       "typedRoutes": true
     }
-  },
-  "scheme": "Portion Track"
+  }
 }
