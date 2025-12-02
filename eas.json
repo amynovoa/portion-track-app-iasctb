@@ -20,6 +20,7 @@
       "ios": {
         "simulator": false,
         "buildConfiguration": "Release",
+        "resourceClass": "m-medium",
         "cache": {
           "disabled": true
         },
@@ -35,6 +36,7 @@
       "ios": {
         "simulator": false,
         "buildConfiguration": "Release",
+        "resourceClass": "m-medium",
         "cache": {
           "disabled": true
         },
