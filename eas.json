@@ -35,7 +35,8 @@
         }
       },
       "env": {
-        "EXPO_USE_HERMES": "0"
+        "EXPO_USE_HERMES": "0",
+        "USE_HERMES": "0"
       }
     },
     "production": {
@@ -57,7 +58,8 @@
         }
       },
       "env": {
-        "EXPO_USE_HERMES": "0"
+        "EXPO_USE_HERMES": "0",
+        "USE_HERMES": "0"
       }
     }
   },
